@@ -2,7 +2,7 @@ import express from 'express'
 
 const app = express()
 
-app.use(express.json()) // middleware que transforma los req.body a un json
+app.use(express.json()) // * Middleware que transforma los req.body a un json
 
 const PORT = 3000 
 
