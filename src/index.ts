@@ -1,16 +1,25 @@
 import express from 'express'
+import empresaRoutes from './routes/empresa';
 
-const app = express()
+const initDB = require('../config/db')
 
-app.use(express.json()) // * Middleware que transforma los req.body a un json
+const app = express();
 
-const PORT = 3000 
+// * Middleware que transforma los req.body a un json
+app.use(express.json()); 
+
+const PORT = 3000; 
 
 app.get('/ping', (_req,res) => {
     console.log('someone pinged here!!')
     res.send('pong')
-})
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
-})
+});
+
+// Agregar las rutas de la entidad Empresa
+app.use('/empresas', empresaRoutes);
+
+initDB();
