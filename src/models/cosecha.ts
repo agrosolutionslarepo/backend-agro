@@ -4,8 +4,8 @@ export interface ICosecha extends Document {
   idCosecha: Number,
   nombreCosecha: String,
   tipoCultivo: String,
-  cantidadCosechado: Number, // ? que vamos a guardar aca?
-  fechaDeCosecha: Date, // ? Que tipo de dato deberia ser?
+  cantidadCosechado: Number, 
+  fechaDeCosecha: Date, 
   estado: Boolean
 }
 
