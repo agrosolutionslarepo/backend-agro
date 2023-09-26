@@ -3,7 +3,7 @@ import UsuarioInformacion, { IUsuarioInformacion } from '../models/usuarioInform
 
 class UsuarioController {
   // Obtener todas las usuarioInformacions
-  public async getAllusuarioInformacions(_req: Request, res: Response): Promise<void> {
+  public async getAllUsuarioInformacion(_req: Request, res: Response): Promise<void> {
     try {
       const usuarioInformacionAll: IUsuarioInformacion[] = await UsuarioInformacion.find();
       res.json(usuarioInformacionAll);
@@ -13,7 +13,7 @@ class UsuarioController {
   }
 
   // Obtener un usuarioInformacion por su ID
-  public async getusuarioInformacionById(req: Request, res: Response): Promise<void> {
+  public async getUsuarioInformacionById(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
 
     try {
@@ -30,7 +30,7 @@ class UsuarioController {
   }
 
   // Crear un nuevo usuarioInformacion
-  public async createusuarioInformacion(req: Request, res: Response): Promise<void> {
+  public async createUsuarioInformacion(req: Request, res: Response): Promise<void> {
     const nuevousuarioInformacion: IUsuarioInformacion = req.body;
 
     try {
@@ -42,7 +42,7 @@ class UsuarioController {
   }
 
   // Actualizar un usuarioInformacion por su ID
-  public async updateusuarioInformacion(req: Request, res: Response): Promise<void> {
+  public async updateUsuarioInformacion(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
     const datosActualizados: IUsuarioInformacion = req.body;
 
@@ -64,7 +64,7 @@ class UsuarioController {
   }
 
   // Eliminar un usuarioInformacion por su ID
-  public async deleteusuarioInformacion(req: Request, res: Response): Promise<void> {
+  public async deleteUsuarioInformacion(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
 
     try {

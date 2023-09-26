@@ -1,5 +1,6 @@
 import express from 'express'
 import empresaRoutes from './routes/empresa';
+import usuarioRoutes from './routes/usuario';
 
 const initDB = require('../config/db')
 
@@ -21,5 +22,6 @@ app.listen(PORT, () => {
 
 // Agregar las rutas de la entidad Empresa
 app.use('/empresas', empresaRoutes);
+app.use('/usuarios', usuarioRoutes);
 
 initDB();
