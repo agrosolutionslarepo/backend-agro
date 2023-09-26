@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import UsuarioInformacion, { IUsuarioInformacion } from '../models/usuarioInformacion';
+const bcrypt = require('bcrypt');
 
 class UsuarioController {
   // Obtener todas las usuarioInformacions
@@ -32,11 +33,15 @@ class UsuarioController {
   // Crear un nuevo usuarioInformacion
   public async createUsuarioInformacion(req: Request, res: Response): Promise<void> {
     const nuevousuarioInformacion: IUsuarioInformacion = req.body;
-
+    const salt = await bcrypt.genSalt(8);
+    nuevousuarioInformacion.contraseña = await bcrypt.hash(nuevousuarioInformacion.contraseña, salt);
+   // nuevousuarioInformacion.contraseña = nuevousuarioInformacion.contraseña.toString();
+   // console.log(nuevousuarioInformacion.contraseña);
     try {
       const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
       res.status(201).json(usuarioInformacionCreado);
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: 'Error al crear el objeto usuarioInformacion' });
     }
   }
