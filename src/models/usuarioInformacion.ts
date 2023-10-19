@@ -5,7 +5,7 @@ export interface IUsuarioInformacion extends Document {
   nombreUsuario: String,
   fechaNacimiento: Date,
   contraseña: String, // TODO Averiguar que formato poner para la contraseña
-  email: Boolean,
+  email: String,
   estado: Boolean
   idNombreEmpresa: Number, // Nueva propiedad para la empresa a la que pertenece
 }
