@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { IEmpresa } from './empresa';
 
 export interface IParcela extends Document {
   idParcela: Number,
@@ -7,7 +8,8 @@ export interface IParcela extends Document {
   tamaño: Number,
   ubicacion: String,
   fechaCultivo: Date,
-  estado: Boolean
+  estado: Boolean,
+  empresa: IEmpresa['_id']; // Referencia a la empresa a la que pertenece la parcela
 }
 
 const ParcelaSchema = new Schema({
@@ -21,7 +23,11 @@ const ParcelaSchema = new Schema({
   tamaño: Number,
   ubicacion: String,
   fechaCultivo: Date,
-  estado: Boolean
+  estado: Boolean,
+  empresa: {
+    type: Schema.Types.ObjectId,
+    ref: 'Empresa', // Nombre del modelo de empresa
+  },
 });
 
 export default mongoose.model<IParcela>('Parcela', ParcelaSchema);

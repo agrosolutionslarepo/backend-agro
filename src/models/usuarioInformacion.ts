@@ -7,6 +7,7 @@ export interface IUsuarioInformacion extends Document {
   contraseña: String, // TODO Averiguar que formato poner para la contraseña
   email: Boolean,
   estado: Boolean
+  idNombreEmpresa: Number, // Nueva propiedad para la empresa a la que pertenece
 }
 
 const UsuarioInformacionSchema = new Schema({
@@ -30,7 +31,11 @@ const UsuarioInformacionSchema = new Schema({
     required: true, 
     unique: true,
   },
-  estado: Boolean
+  estado: Boolean,
+  empresa: {
+    type: Schema.Types.ObjectId,
+    ref: 'Empresa', // Nombre del modelo de empresa
+  },
 });
 
 export default mongoose.model<IUsuarioInformacion>('UsuarioInformacion', UsuarioInformacionSchema);
