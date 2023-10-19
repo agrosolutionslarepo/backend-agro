@@ -83,7 +83,7 @@ class ParcelaController {
     try {
       const parcelaEliminada: IParcela | null = await Parcela.findOneAndDelete({
         idParcela: id,
-      });
+      }); // test commit 
 
       if (parcelaEliminada) {
         res.json({ message: 'Parcela eliminada correctamente' });
