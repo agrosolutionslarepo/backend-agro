@@ -35,8 +35,7 @@ class UsuarioController {
     const nuevousuarioInformacion: IUsuarioInformacion = req.body;
     const salt = await bcrypt.genSalt(8);
     nuevousuarioInformacion.contraseña = await bcrypt.hash(nuevousuarioInformacion.contraseña, salt);
-   // nuevousuarioInformacion.contraseña = nuevousuarioInformacion.contraseña.toString();
-   // console.log(nuevousuarioInformacion.contraseña);
+
     try {
       const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
       res.status(201).json(usuarioInformacionCreado);
