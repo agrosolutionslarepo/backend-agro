@@ -2,14 +2,16 @@ import { Request, Response } from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 import User from '../models/usuarioInformacion';
+require('dotenv').config();
 //const User = require('../models/usuarioInformacion');
 
 
 class LoginController {
 
-    public async loguear (req: Request, res: Response): Promise<void>{
+    public async loguear (req: Request, res: Response, next: any): Promise<void>{
         const { body } = req;
         const { email, contraseña } = body;
+        try{
         const user = await User.findOne({ email });
         console.log(user)
         const passwordCorrect = user === null
@@ -31,8 +33,8 @@ class LoginController {
     
             }
 
-        const token = jwt.sign(infoToken, '123');
-        
+        const token = jwt.sign(infoToken, 'patata');
+        console.log(process.env.SECRET);
         res.send ({
 
 
@@ -44,12 +46,11 @@ class LoginController {
     
         
 
-    }
+    } catch(e) {
+        next(e);
 
-
-
-
+    }   
 
 }
-
+}
 export default new LoginController();

@@ -2,6 +2,9 @@ import express from 'express'
 import empresaRoutes from './routes/empresa';
 import usuarioRoutes from './routes/usuario';
 import LoginRoutes from './routes/login';
+const tokenValidator = require ('./middleware/tokenValidator');
+const errorHandler = require ('./middleware/errorHandler');
+require('dotenv').config();
 
 const initDB = require('../config/db')
 
@@ -22,8 +25,8 @@ app.listen(PORT, () => {
 });
 
 // Agregar las rutas de la entidad Empresa
-app.use('/empresas', empresaRoutes);
-app.use('/usuarios', usuarioRoutes);
+app.use('/empresas',tokenValidator, empresaRoutes);
+app.use('/usuarios',tokenValidator, usuarioRoutes);
 app.use('/login', LoginRoutes);
-
+app.use(errorHandler);
 initDB();

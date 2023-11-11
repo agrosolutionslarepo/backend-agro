@@ -3,12 +3,13 @@ import Empresa, { IEmpresa } from '../models/empresa';
 
 class EmpresaController {
   // Obtener todas las empresas
-  public async getAllEmpresas(_req: Request, res: Response): Promise<void> {
+  public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> {
     try {
       const empresas: IEmpresa[] = await Empresa.find();
       res.json(empresas);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener las empresas' });
+      next(error);
     }
   }
 
