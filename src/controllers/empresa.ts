@@ -3,12 +3,13 @@ import Empresa, { IEmpresa } from '../models/empresa';
 
 class EmpresaController {
   // Obtener todas las empresas
-  public async getAllEmpresas(_req: Request, res: Response): Promise<void> {
+  public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> {
     try {
       const empresas: IEmpresa[] = await Empresa.find();
       res.json(empresas);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener las empresas' });
+      next(error);
     }
   }
 
@@ -30,14 +31,19 @@ class EmpresaController {
   }
 
   // Crear una nueva empresa
-  public async createEmpresa(req: Request, res: Response): Promise<void> {
+  public async createEmpresa(req: Request, res: Response): Promise<Response> {
     const nuevaEmpresa: IEmpresa = req.body;
+
+    // Validar los datos de entrada
+    if (!nuevaEmpresa || typeof nuevaEmpresa.idNombreEmpresa !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
+      return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
+    }
 
     try {
       const empresaCreada: IEmpresa = await Empresa.create(nuevaEmpresa);
-      res.status(201).json(empresaCreada);
+      return res.status(201).json(empresaCreada);
     } catch (error) {
-      res.status(500).json({ error: 'Error al crear la empresa' });
+      return res.status(500).json({ error: 'Error al crear la empresa' });
     }
   }
 
