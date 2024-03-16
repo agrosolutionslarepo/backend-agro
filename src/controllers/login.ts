@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 import User from '../models/usuarioInformacion';
-require('dotenv').config();
 //const User = require('../models/usuarioInformacion');
 
 
@@ -33,7 +32,7 @@ class LoginController {
     
             }
 
-        const token = jwt.sign(infoToken, 'patata');
+        const token = jwt.sign(infoToken, process.env.SECRET);
         console.log(process.env.SECRET);
         res.send ({
 

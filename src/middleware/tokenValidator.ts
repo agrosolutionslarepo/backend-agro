@@ -14,7 +14,7 @@ module.exports = (request: Request, response: Response, next: any) => {
         
     if(token){
     
-        const decodedToken = jwt.verify(token, 'patata')
+        const decodedToken = jwt.verify(token, process.env.SECRET)
         if (!decodedToken.id){
 
             return response.status(401).json({error: 'token no presentado o no valido'});

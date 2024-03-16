@@ -87,6 +87,24 @@ class EmpresaController {
       res.status(500).json({ error: 'Error al eliminar la empresa' });
     }
   }
+
+  public async getEmpresaLogueado(req: Request, res: Response): Promise<void> {
+    //const userId = req.params.userId;
+    
+    const id: number = parseInt(req.params.id, 10);
+
+    try {
+      const empresa: IEmpresa | null = await Empresa.findOne({ idNombreEmpresa: id });
+
+      if (empresa) {
+        res.json(empresa);
+      } else {
+        res.status(404).json({ error: 'Empresa no encontrada' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener la empresa' });
+    }
+  }
 }
 
 export default new EmpresaController();
