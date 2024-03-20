@@ -89,7 +89,9 @@ class EmpresaController {
   }
 
   public async getEmpresaLogueado(req: Request, res: Response): Promise<void> {
-    //const userId = req.params.userId;
+
+    const userId = req.user;
+    console.log(userId);
     
     const id: number = parseInt(req.params.id, 10);
 
