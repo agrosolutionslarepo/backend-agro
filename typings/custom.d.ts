@@ -1,9 +1,10 @@
-import express from "express";
+import {Request} from 'express'
 
 declare global {
   namespace Express {
-    interface Request {
+     interface Request {
       user?: any
+      users?: any
     }
   }
 }
