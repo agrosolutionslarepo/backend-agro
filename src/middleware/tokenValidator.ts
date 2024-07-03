@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import {CustRequest} from '../definitrion';
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-module.exports = (request: Request, response: Response, next: NextFunction) => {
+module.exports = (request: CustRequest, response: Response, next: NextFunction) => {
   const auth = request.get("authorization");
   let token = null;
   if (auth && auth.toLowerCase().startsWith("bearer")) {

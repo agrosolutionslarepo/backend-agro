@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Empresa, { IEmpresa } from '../models/empresa';
+import {CustRequest} from '../definitrion';
 
 class EmpresaController {
   // Obtener todas las empresas
@@ -88,7 +89,7 @@ class EmpresaController {
     }
   }
 
-  public async getEmpresaLogueado(req: Request, res: Response): Promise<void> {
+  public async getEmpresaLogueado(req: CustRequest, res: Response): Promise<void> {
 
     const userId = req.user;
     console.log(userId);
