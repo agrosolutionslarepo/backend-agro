@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import Empresa, { IEmpresa } from '../models/empresa';
+import {CustRequest} from '../definitrion';
 
 class EmpresaController {
   // Obtener todas las empresas
-  public async getAllEmpresas(_req: Request, res: Response): Promise<void> {
+  public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> {
     try {
       const empresas: IEmpresa[] = await Empresa.find();
       res.json(empresas);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener las empresas' });
+      next(error);
     }
   }
 
@@ -84,6 +86,26 @@ class EmpresaController {
       }
     } catch (error) {
       res.status(500).json({ error: 'Error al eliminar la empresa' });
+    }
+  }
+
+  public async getEmpresaLogueado(req: CustRequest, res: Response): Promise<void> {
+
+    const userId = req.user;
+    console.log(userId);
+    
+    const id: number = parseInt(req.params.id, 10);
+
+    try {
+      const empresa: IEmpresa | null = await Empresa.findOne({ idNombreEmpresa: id });
+
+      if (empresa) {
+        res.json(empresa);
+      } else {
+        res.status(404).json({ error: 'Empresa no encontrada' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener la empresa' });
     }
   }
 }

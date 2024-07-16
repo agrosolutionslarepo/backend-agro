@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-const DB_URI =  'mongodb+srv://agrosolutions:t61MGvpIX9ZWaqyM@clusteragrosolutions.npywedp.mongodb.net/'
+const DB_URI =  'mongodb+srv://agrosolutions:RdPOgidAqoMvCqtp@clusteragrosolutions.npywedp.mongodb.net/'
 
 module.exports = async () => {
     const connect = async () => {
