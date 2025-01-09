@@ -1,20 +1,23 @@
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+
 const ERROR_HANDLERS = {
-    JsonWebTokenError: (res: Response) =>
-      res.status(401).json({ error: 'token missing or invalid' }),
-  
-    TokenExpirerError: (res: Response) =>
-      res.status(401).json({ error: 'token expired' }),
-  
-    defaultError: (res: Response, error: Error) => {
-      console.error(error.name)
-      res.status(500).end()
-    }
-  }
-  
-  module.exports = (error: Error, response: Response ) => {
-    const handler =
-      ERROR_HANDLERS[error.name as keyof typeof ERROR_HANDLERS] || ERROR_HANDLERS.defaultError
-  
-    handler(response, error)
-  }
+  JsonWebTokenError: (res: Response) =>
+    res.status(401).json({ error: 'token missing or invalid' }),
+
+  TokenExpiredError: (res: Response) =>
+    res.status(401).json({ error: 'token expired' }),
+  InvalidCredentialsError: (res: Response, error: Error) =>
+    res.status(401).json({ error: error.message }),
+
+  defaultError: (res: Response, error: Error) => {
+    console.error("Unhandled error:", error.name, error.message); // Log para depuración
+    res.status(500).json({ error: 'internal server error' });
+  },
+};
+
+module.exports = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
+  const handler =
+    ERROR_HANDLERS[error.name as keyof typeof ERROR_HANDLERS] || ERROR_HANDLERS.defaultError;
+
+  handler(res, error);
+};
