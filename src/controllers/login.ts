@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 import User from '../models/usuarioInformacion';
-//const User = require('../models/usuarioInformacion');
 
 
 class LoginController {

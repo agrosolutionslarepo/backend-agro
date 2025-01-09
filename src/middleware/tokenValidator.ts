@@ -1,30 +1,33 @@
 import { Response, NextFunction } from "express";
-import {CustRequest} from '../definitrion';
+import { CustRequest } from '../custrequest';
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-module.exports = (request: CustRequest, response: Response, next: NextFunction) => {
-  const auth = request.get("authorization");
-  let token = null;
-  if (auth && auth.toLowerCase().startsWith("bearer")) {
-    token = auth.substring(7);
-  }
 
-  if (token) {
-    const decodedToken = jwt.verify(token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response
-        .status(401)
-        .json({ error: "token no presentado o no valido" });
-    } else {
+module.exports = (request: CustRequest, _res: Response,next: NextFunction) => {
+  try {
+    const auth = request.get("authorization");
+    let token = null;
+
+    if (auth && auth.toLowerCase().startsWith("bearer")) {
+      token = auth.substring(7);
+    }
+
+    if (token) {
+      const decodedToken = jwt.verify(token, process.env.SECRET);
+      if (!decodedToken.id) {
+        throw new Error("Token no presentado o no válido");
+      }
+
       const { id: userId } = decodedToken;
       console.log(userId);
 
       request.user = userId;
       next();
+    } else {
+      throw new Error("Token no presentado o no válido");
     }
-  } else {
-    return response
-      .status(401)
-      .json({ error: "token no presentado o no valido" });
+  } catch (error) {
+    next(error); // Pasa el error al middleware de manejo de errores
   }
 };
+

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Empresa, { IEmpresa } from '../models/empresa';
-import {CustRequest} from '../definitrion';
+import {CustRequest} from '../custrequest';
 
 class EmpresaController {
   // Obtener todas las empresas
