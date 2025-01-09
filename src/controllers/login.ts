@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { InvalidCredentialsError } from "../errors/loginErrors";
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
 import User from '../models/usuarioInformacion';
@@ -6,7 +7,7 @@ import User from '../models/usuarioInformacion';
 
 class LoginController {
 
-    public async loguear (req: Request, res: Response, next: any): Promise<void>{
+    public async loguear (req: Request, res: Response, next: NextFunction): Promise<void>{
         const { body } = req;
         const { email, contraseña } = body;
         try{
@@ -17,11 +18,7 @@ class LoginController {
             : await bcrypt.compare(contraseña, user.contraseña);
             console.log(passwordCorrect)
         if (!(user && passwordCorrect)){
-            res.status(401).json({
-                error: 'Usuario y/o Password incorrecto'
-
-
-            })
+            throw new InvalidCredentialsError();
 
         }
         const infoToken = {
@@ -44,8 +41,8 @@ class LoginController {
     
         
 
-    } catch(e) {
-        next(e);
+    } catch(error) {
+        next(error);
 
     }   
 
