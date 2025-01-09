@@ -3,7 +3,7 @@ import { CustRequest } from '../custrequest';
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-module.exports = (request: CustRequest, _res: Response,next: NextFunction) => {
+module.exports = (request: CustRequest, _res: Response, next: NextFunction) => {
   try {
     const auth = request.get("authorization");
     let token = null;
