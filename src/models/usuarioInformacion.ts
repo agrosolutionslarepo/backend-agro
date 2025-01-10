@@ -7,7 +7,7 @@ export interface IUsuarioInformacion extends Document {
   contraseña: String, // TODO Averiguar que formato poner para la contraseña
   email: String,
   estado: Boolean
-  idNombreEmpresa: Number, // Nueva propiedad para la empresa a la que pertenece
+  empresa: Schema.Types.ObjectId, // Nueva propiedad para la empresa a la que pertenece
 }
 
 const UsuarioInformacionSchema = new Schema({

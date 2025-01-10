@@ -8,6 +8,8 @@ const ERROR_HANDLERS = {
     res.status(401).json({ error: 'token expired' }),
   InvalidCredentialsError: (res: Response, error: Error) =>
     res.status(401).json({ error: error.message }),
+  UsuarioExistenteError: (res: Response, error: Error) =>
+    res.status(409).json({ error: error.message }),
 
   defaultError: (res: Response, error: Error) => {
     console.error("Unhandled error:", error.name, error.message); // Log para depuración

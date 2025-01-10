@@ -15,7 +15,7 @@ module.exports = (request: CustRequest, _res: Response, next: NextFunction) => {
     if (token) {
       const decodedToken = jwt.verify(token, process.env.SECRET);
       if (!decodedToken.id) {
-        throw new Error("Token no presentado o no válido");
+        throw new jwt.JsonWebTokenError();
       }
 
       const { id: userId } = decodedToken;
@@ -24,7 +24,7 @@ module.exports = (request: CustRequest, _res: Response, next: NextFunction) => {
       request.user = userId;
       next();
     } else {
-      throw new Error("Token no presentado o no válido");
+      throw new jwt.JsonWebTokenError();
     }
   } catch (error) {
     next(error); // Pasa el error al middleware de manejo de errores
