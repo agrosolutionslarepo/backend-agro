@@ -122,6 +122,7 @@ class UsuarioController {
         }
       } else {
         // 2b. Si NO se recibió un código de invitación, creamos una nueva empresa
+        console.log(empresaData)
         if (!empresaData) {
           throw new UsuarioExistenteError("Faltan datos para empresa");
         }

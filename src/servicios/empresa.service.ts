@@ -9,15 +9,17 @@ class EmpresaService {
   public async createEmpresa(data: any) {
     try {
     const nuevaEmpresa: IEmpresa = data;
-    
+    console.log(nuevaEmpresa)
         // Validar los datos de entrada
         if (!nuevaEmpresa || typeof nuevaEmpresa.idNombreEmpresa !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
+            console.log(nuevaEmpresa)
           throw new Error();
         }
           const empresaCreada: IEmpresa = await Empresa.create(nuevaEmpresa);
           return empresaCreada;
-        } catch (error) {
-            throw new Error();
+        } catch (error: any) {
+            console.error('Error al crear empresa:', error);
+            throw new Error(error.message || 'Error al crear empresa');
         }
       }
     
