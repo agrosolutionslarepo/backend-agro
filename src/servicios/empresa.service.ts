@@ -26,6 +26,7 @@ class EmpresaService {
   
 
   /**
+   * ESTOS NO LOS USAMOS TODAVIA
    * Busca una empresa por su ID.
    * @param id El ObjectId (string) de la empresa en MongoDB.
    * @returns La empresa encontrada, o null si no existe.

@@ -139,7 +139,7 @@ class UsuarioController {
       const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
       res.status(201).json(usuarioInformacionCreado);
     } catch (error) {
-      console.log(error)
+      console.error(error)
       next(error);
     }
   }
