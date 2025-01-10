@@ -90,18 +90,20 @@ class UsuarioController {
 
 
 
-private async getUsuarioInformacionByEmail(email: String): Promise<IUsuarioInformacion | null> {
-  try {
-    const usuarioInformacion = await UsuarioInformacion.findOne({ email });
-    return usuarioInformacion; // Devuelves el objeto o null si no existe
-  } catch (error) {
-    // Puedes manejar o lanzar el error según tu conveniencia
-    throw new Error('Error al obtener el objeto usuarioInformacion');
-  }
-}
+  private getUsuarioInformacionByEmail = async (email: string): Promise<IUsuarioInformacion | null> => {
+    try {
+      const usuarioInformacion = await UsuarioInformacion.findOne({ email });
+      return usuarioInformacion; // Devuelve el objeto o null si no existe
+    } catch (error) {
+      // Puedes manejar o lanzar el error según tu conveniencia
+      throw new Error('Error al obtener el objeto usuarioInformacion');
+    }
+  };
+  
 
 
-  public async registrarse(req: Request, res: Response, next: NextFunction): Promise<void> {
+  public registrarse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log('Dentro de registrarse, this:', this);
     try {
       const nuevousuarioInformacion: IUsuarioInformacion = req.body;
       const { email, codigoInvitacion, empresaData } = req.body;
