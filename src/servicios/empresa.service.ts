@@ -11,7 +11,7 @@ class EmpresaService {
     const nuevaEmpresa: IEmpresa = data;
     console.log(nuevaEmpresa)
         // Validar los datos de entrada
-        if (!nuevaEmpresa || typeof nuevaEmpresa.idNombreEmpresa !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
+        if (!nuevaEmpresa || typeof nuevaEmpresa.id !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
             console.log(nuevaEmpresa)
           throw new Error();
         }

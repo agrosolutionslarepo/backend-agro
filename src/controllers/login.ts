@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { InvalidCredentialsError } from "../errors/loginErrors";
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
-import User from '../models/usuarioInformacion';
+import User from '../models/usuario';
 
 
 class LoginController {
@@ -22,7 +22,7 @@ class LoginController {
 
         }
         const infoToken = {
-            id: user?.idUsuario,
+            id: user?.id,
             nombreUsuario: user?.nombreUsuario,
             email: user?.email,
     

@@ -36,7 +36,7 @@ class EmpresaController {
     const nuevaEmpresa: IEmpresa = req.body;
 
     // Validar los datos de entrada
-    if (!nuevaEmpresa || typeof nuevaEmpresa.idNombreEmpresa !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
+    if (!nuevaEmpresa || typeof nuevaEmpresa.id !== 'number' || typeof nuevaEmpresa.nombreEmpresa !== 'string') {
       return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
     }
 

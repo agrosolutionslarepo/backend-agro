@@ -1,21 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IUsuarioInformacion extends Document {
-  idUsuario: Number,
+export interface IUsuario extends Document {
   nombreUsuario: String,
   fechaNacimiento: Date,
-  contraseña: String, // TODO Averiguar que formato poner para la contraseña
+  contraseña: String,
   email: String,
   estado: Boolean
   empresa: Schema.Types.ObjectId, // Nueva propiedad para la empresa a la que pertenece
 }
 
-const UsuarioInformacionSchema = new Schema({
-  idUsuario: {
-    type: Number,
-    required: true,
-    unique: true, 
-  },
+const UsuarioSchema = new Schema({
   nombreUsuario: {
     type: String,
     required: true, 
@@ -38,4 +32,4 @@ const UsuarioInformacionSchema = new Schema({
   },
 });
 
-export default mongoose.model<IUsuarioInformacion>('UsuarioInformacion', UsuarioInformacionSchema);
+export default mongoose.model<IUsuario>('Usuario', UsuarioSchema);

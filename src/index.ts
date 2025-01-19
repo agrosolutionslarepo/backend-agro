@@ -28,6 +28,6 @@ app.listen(PORT, () => {
 app.use('/empresas', tokenValidator, empresaRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/login', LoginRoutes);
-//errorHandler Todo error que ocurra que en runtime que sea encapsulado den try catch y enviado a travez de la funcion next termina en el handdler
+//errorHandler To do error que ocurra que en runtime que sea encapsulado den try catch y enviado a travez de la funcion next termina en el handdler
 app.use(errorHandler);
 initDB();

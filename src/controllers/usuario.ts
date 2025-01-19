@@ -1,113 +1,100 @@
 import { Request, Response, NextFunction } from 'express';
-import UsuarioInformacion, { IUsuarioInformacion } from '../models/usuarioInformacion';
+import Usuario, { IUsuario } from '../models/usuario';
 const bcrypt = require('bcrypt');
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { empresaService } from '../servicios/empresa.service';
+import { usuarioService } from '../servicios/usuario.service';
 
 class UsuarioController {
-  // Obtener todas las usuarioInformacions
-  public async getAllUsuarioInformacion(_req: Request, res: Response): Promise<void> {
+  // Obtener todas las usuario
+  public async getAllUsuario(_req: Request, res: Response): Promise<void> {
     try {
-      const usuarioInformacionAll: IUsuarioInformacion[] = await UsuarioInformacion.find();
-      res.json(usuarioInformacionAll);
+      const usuarioAll: IUsuario[] = await Usuario.find();
+      res.json(usuarioAll);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los usuarioInformacions' });
+      res.status(500).json({ error: 'Error al obtener los usuarios' });
     }
   }
 
-  // Obtener un usuarioInformacion por su ID
-  public async getUsuarioInformacionById(req: Request, res: Response): Promise<void> {
+  // Obtener un usuario por su ID
+  public async getUsuarioById(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
 
     try {
-      const usuarioInformacion: IUsuarioInformacion | null = await UsuarioInformacion.findOne({ idUsuario: id });
+      const usuario: IUsuario | null = await Usuario.findOne({ idUsuario: id });
 
-      if (usuarioInformacion) {
-        res.json(usuarioInformacion);
+      if (usuario) {
+        res.json(usuario);
       } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
+        res.status(404).json({ error: 'usuario no encontrado' });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener el objeto usuarioInformacion' });
+      res.status(500).json({ error: 'Error al obtener el objeto usuario' });
     }
   }
 
-  // Crear un nuevo usuarioInformacion
-  public async createUsuarioInformacion(req: Request, res: Response): Promise<void> {
-    const nuevousuarioInformacion: IUsuarioInformacion = req.body;
+  // Crear un nuevo usuario
+  public async createUsuario(req: Request, res: Response): Promise<void> {
+    const nuevousuario: IUsuario = req.body;
     const salt = await bcrypt.genSalt(8);
-    nuevousuarioInformacion.contraseña = await bcrypt.hash(nuevousuarioInformacion.contraseña, salt);
+    nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, salt);
 
     try {
-      const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
-      res.status(201).json(usuarioInformacionCreado);
+      const usuarioCreado: IUsuario = await Usuario.create(nuevousuario);
+      res.status(201).json(usuarioCreado);
     } catch (error) {
       console.log(error)
-      res.status(500).json({ error: 'Error al crear el objeto usuarioInformacion' });
+      res.status(500).json({ error: 'Error al crear el objeto usuario' });
     }
   }
 
-  // Actualizar un usuarioInformacion por su ID
-  public async updateUsuarioInformacion(req: Request, res: Response): Promise<void> {
+  // Actualizar un usuario por su ID
+  public async updateUsuario(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: IUsuarioInformacion = req.body;
+    const datosActualizados: IUsuario = req.body;
 
     try {
-      const usuarioInformacionActualizado: IUsuarioInformacion | null = await UsuarioInformacion.findOneAndUpdate(
+      const usuarioActualizado: IUsuario | null = await Usuario.findOneAndUpdate(
         { idUsuario: id },
         datosActualizados,
         { new: true }
       );
 
-      if (usuarioInformacionActualizado) {
-        res.json(usuarioInformacionActualizado);
+      if (usuarioActualizado) {
+        res.json(usuarioActualizado);
       } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
+        res.status(404).json({ error: 'usuario no encontrado' });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la usuarioInformacion' });
+      res.status(500).json({ error: 'Error al actualizar la usuario' });
     }
   }
 
-  // Eliminar un usuarioInformacion por su ID
-  public async deleteUsuarioInformacion(req: Request, res: Response): Promise<void> {
+  // Eliminar un usuario por su ID
+  public async deleteUsuario(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
 
     try {
-      const usuarioInformacionEliminado: IUsuarioInformacion | null = await UsuarioInformacion.findOneAndDelete({
+      const usuarioEliminado: IUsuario | null = await Usuario.findOneAndDelete({
         idUsuario: id,
       });
 
-      if (usuarioInformacionEliminado) {
-        res.json({ message: 'usuarioInformacion eliminado correctamente' });
+      if (usuarioEliminado) {
+        res.json({ message: 'usuario eliminado correctamente' });
       } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
+        res.status(404).json({ error: 'usuario no encontrado' });
       }
     } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la usuarioInformacion' });
+      res.status(500).json({ error: 'Error al eliminar la usuario' });
     }
-  }
-
-
-
-  private getUsuarioInformacionByEmail = async (email: string): Promise<IUsuarioInformacion | null> => {
-    try {
-      const usuarioInformacion = await UsuarioInformacion.findOne({ email });
-      return usuarioInformacion; // Devuelve el objeto o null si no existe
-    } catch (error) {
-      // Puedes manejar o lanzar el error según tu conveniencia
-      throw new Error('Error al obtener el objeto usuarioInformacion');
-    }
-  };
-  
-
+  }  
 
   public registrarse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log('Dentro de registrarse, this:', this);
     try {
-      const nuevousuarioInformacion: IUsuarioInformacion = req.body;
+      const nuevousuario: IUsuario = req.body;
       const { email, codigoInvitacion, empresaData } = req.body;
-      const usuarioExistente = await this.getUsuarioInformacionByEmail(email);
+      const usuarioExistente = await usuarioService.getUsuarioByEmail(email);
       if (usuarioExistente) {
         // Maneja el caso de que el usuario ya exista
         throw new UsuarioExistenteError();
@@ -118,7 +105,7 @@ class UsuarioController {
         // 2a. Si existe un código de invitación, buscar la empresa por dicho código
         empresa = await empresaService.getEmpresaByCodigo(codigoInvitacion);
         if (!empresa) {
-          throw new UsuarioExistenteError("Codigo de invitación invalodo o empresa no encontrada");
+          throw new UsuarioExistenteError("Codigo de invitación invalido o empresa no encontrada");
         }
       } else {
         // 2b. Si NO se recibió un código de invitación, creamos una nueva empresa
@@ -130,23 +117,19 @@ class UsuarioController {
         // Se asume que empresaData contiene { idNombreEmpresa, nombreEmpresa, ... }
         empresa = await empresaService.createEmpresa(empresaData);
       }
-    
-    const salt = await bcrypt.genSalt(8);
-    nuevousuarioInformacion.contraseña = await bcrypt.hash(nuevousuarioInformacion.contraseña, salt);
-    nuevousuarioInformacion.empresa = empresa._id
 
-    
-      const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
-      res.status(201).json(usuarioInformacionCreado);
+      const salt = await bcrypt.genSalt(8);
+      nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, salt);
+      nuevousuario.empresa = empresa._id
+
+
+      const usuarioCreado: IUsuario = await Usuario.create(nuevousuario);
+      res.status(201).json(usuarioCreado);
     } catch (error) {
-      console.error(error)
-      next(error);
+        console.error(error)
+        next(error);
     }
   }
-
-
-
-
 }
 
 export default new UsuarioController();

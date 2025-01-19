@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISemilla extends Document {
-  idSemilla: Number,
   nombreSemilla: String,
   tipoSemilla: String,
   cantidadSemilla: Number,
@@ -9,11 +8,6 @@ export interface ISemilla extends Document {
 }
 
 const SemillaSchema = new Schema({
-  idSemilla: {
-    type: Number,
-    required: true, // Hace que el campo sea requerido
-    unique: true,   // Hace que el campo sea único
-  },
   nombreSemilla: String,
   tipoSemilla: String,
   cantidadSemilla: Number,

@@ -4,13 +4,13 @@ const tokenValidator = require ('../middleware/tokenValidator');
 
 const router = express.Router();
 
-// Rutas para la entidad Empresa
+// Rutas para la entidad Usuario
 router.post('/registrarse', UsuarioController.registrarse);
 router.use(tokenValidator);
-router.get('/getAllEmpresas', UsuarioController.getAllUsuarioInformacion); 
-router.get('/:id', UsuarioController.getUsuarioInformacionById);
-router.post('/', UsuarioController.createUsuarioInformacion);
-router.put('/:id', UsuarioController.updateUsuarioInformacion);
-router.delete('/:id', UsuarioController.deleteUsuarioInformacion);
+router.get('/getAllEmpresas', UsuarioController.getAllUsuario); 
+router.get('/:id', UsuarioController.getUsuarioById);
+router.post('/', UsuarioController.createUsuario);
+router.put('/:id', UsuarioController.updateUsuario);
+router.delete('/:id', UsuarioController.deleteUsuario);
 
 export default router;
