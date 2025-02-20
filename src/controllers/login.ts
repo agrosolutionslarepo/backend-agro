@@ -25,6 +25,7 @@ class LoginController {
             id: user?.id,
             nombreUsuario: user?.nombreUsuario,
             email: user?.email,
+            idEmpresa: user.empresa,
     
             }
 
