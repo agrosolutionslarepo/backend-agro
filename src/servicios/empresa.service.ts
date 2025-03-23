@@ -1,27 +1,38 @@
 import Empresa, { IEmpresa } from '../models/empresa';
 
 class EmpresaService {
-  /**
-   * Crea una nueva empresa en la base de datos.
-   * @param data Datos necesarios para crear la empresa (nombre, dirección, etc.).
-   * @returns La empresa recién creada (documento de Mongoose).
-   */
-  public async createEmpresa(data: any) {
+
+  public async createEmpresa(data: IEmpresa): Promise<IEmpresa> { // funciona
+    if (typeof data.nombreEmpresa !== 'string') {
+      throw new Error('Los datos de entrada son inválidos');
+    }
+
     try {
-    const nuevaEmpresa: IEmpresa = data;
-    console.log(nuevaEmpresa)
-        // Validar los datos de entrada
-        if (typeof nuevaEmpresa.nombreEmpresa !== 'string') {
-            console.log(nuevaEmpresa)
-          throw new Error();
-        }
-          const empresaCreada: IEmpresa = await Empresa.create(nuevaEmpresa);
-          return empresaCreada;
-        } catch (error: any) {
-            console.error('Error al crear empresa:', error);
-            throw new Error(error.message || 'Error al crear empresa');
-        }
+      const empresaCreada: IEmpresa = await Empresa.create(data);
+      return empresaCreada;
+    } catch (error: any) {
+      throw new Error(error.message || 'Error al crear la empresa');
+    }
+  }
+
+  public async updateEmpresa(id: string, data: Partial<IEmpresa>): Promise<IEmpresa | null> { // funciona
+    // Validar los datos de entrada
+    if (!data.nombreEmpresa || typeof data.nombreEmpresa !== 'string') {
+      throw new Error('El nombre de la empresa es obligatorio y debe ser un string');
+    }
+
+    try {
+      const empresaActualizada = await Empresa.findByIdAndUpdate(id, data, { new: true });
+
+      if (!empresaActualizada) {
+        throw new Error('Empresa no encontrada');
       }
+
+      return empresaActualizada;
+    } catch (error: any) {
+      throw new Error(error.message || 'Error al actualizar la empresa');
+    }
+  }
     
   
 

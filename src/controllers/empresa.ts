@@ -1,10 +1,24 @@
 import { Request, Response } from 'express';
 import Empresa, { IEmpresa } from '../models/empresa';
 import {CustRequest} from '../custrequest';
+import { empresaService } from '../servicios/empresa.service';
 
 class EmpresaController {
+
+  public async updateEmpresa(req: Request, res: Response): Promise<Response> { // funciona
+    const { id } = req.params; // Obtener el ID de la empresa desde la URL
+    const data = req.body;
+  
+    try {
+      const empresaActualizada = await empresaService.updateEmpresa(id, data);
+      return res.status(200).json(empresaActualizada);
+    } catch (error: any) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
   // Obtener todas las empresas
-  public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> {
+  public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> { // funciona
     try {
       const empresas: IEmpresa[] = await Empresa.find();
       res.json(empresas);
@@ -15,7 +29,7 @@ class EmpresaController {
   }
 
   // Obtener una empresa por su ID
-  public async getEmpresaById(req: Request, res: Response): Promise<void> {
+  public async getEmpresaById(req: Request, res: Response): Promise<void> { 
     const id: number = parseInt(req.params.id, 10);
 
     try {
@@ -31,23 +45,7 @@ class EmpresaController {
     }
   }
 
-  // Crear una nueva empresa
-  public async createEmpresa(req: Request, res: Response): Promise<Response> {
-    const nuevaEmpresa: IEmpresa = req.body;
-
-    // Validar los datos de entrada
-    if (typeof nuevaEmpresa.nombreEmpresa !== 'string') {
-      return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
-    }
-
-    try {
-      const empresaCreada: IEmpresa = await Empresa.create(nuevaEmpresa);
-      return res.status(201).json(empresaCreada);
-    } catch (error) {
-      return res.status(500).json({ error: 'Error al crear la empresa' });
-    }
-  }
-
+  /*
   // Actualizar una empresa por su ID
   public async updateEmpresa(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
@@ -68,7 +66,17 @@ class EmpresaController {
     } catch (error) {
       res.status(500).json({ error: 'Error al actualizar la empresa' });
     }
-  }
+  }*/
+
+  /* DEPRECATED: Un metodo para crear empresa unicamente si no es en el registro de un usuario sin codigo no seria necesario
+  public async createEmpresa(req: Request, res: Response): Promise<Response> { /
+    try {
+      const empresaCreada = await empresaService.createEmpresa(req.body);
+      return res.status(201).json(empresaCreada);
+    } catch (error: any) {
+      return res.status(400).json({ error: error.message });
+    }
+  }*/
 
   // Eliminar una empresa por su ID
   public async deleteEmpresa(req: Request, res: Response): Promise<void> {

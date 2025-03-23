@@ -1,11 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import Usuario, { IUsuario } from '../models/usuario';
 const bcrypt = require('bcrypt');
-import { UsuarioExistenteError } from "../errors/usuarioErrors";
-import { empresaService } from '../servicios/empresa.service';
 import { usuarioService } from '../servicios/usuario.service';
 
 class UsuarioController {
+
+  public registrarse = async (req: Request, res: Response, next: NextFunction): Promise<void> => { // Validada
+    try {
+        const { codigoInvitacion, empresaData, ...usuarioData } = req.body;
+        const usuarioCreado = await usuarioService.registrarse(usuarioData, codigoInvitacion, empresaData);
+        res.status(201).json(usuarioCreado);
+    } catch (error) {
+        next(error);
+    }
+  };
+
   // Obtener todas las usuario
   public async getAllUsuario(_req: Request, res: Response): Promise<void> {
     try {
@@ -89,47 +98,7 @@ class UsuarioController {
     }
   }  
 
-  public registrarse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log('Dentro de registrarse, this:', this);
-    try {
-      const nuevousuario: IUsuario = req.body;
-      const { email, codigoInvitacion, empresaData } = req.body;
-      const usuarioExistente = await usuarioService.getUsuarioByEmail(email);
-      if (usuarioExistente) {
-        // Maneja el caso de que el usuario ya exista
-        throw new UsuarioExistenteError();
-      }
-      let empresa; // IEmpresa | null
-
-      if (codigoInvitacion) {
-        // 2a. Si existe un código de invitación, buscar la empresa por dicho código
-        empresa = await empresaService.getEmpresaByCodigo(codigoInvitacion);
-        if (!empresa) {
-          throw new UsuarioExistenteError("Codigo de invitación invalido o empresa no encontrada");
-        }
-      } else {
-        // 2b. Si NO se recibió un código de invitación, creamos una nueva empresa
-        console.log(empresaData)
-        if (!empresaData) {
-          throw new UsuarioExistenteError("Faltan datos para empresa");
-        }
-
-        // Se asume que empresaData contiene { idNombreEmpresa, nombreEmpresa, ... }
-        empresa = await empresaService.createEmpresa(empresaData);
-      }
-
-      const salt = await bcrypt.genSalt(8);
-      nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, salt);
-      nuevousuario.empresa = empresa._id
-
-
-      const usuarioCreado: IUsuario = await Usuario.create(nuevousuario);
-      res.status(201).json(usuarioCreado);
-    } catch (error) {
-        console.error(error)
-        next(error);
-    }
-  }
+  
 }
 
 export default new UsuarioController();
