@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 class UsuarioService {
 
-  public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> {
+  public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> { // funciona
     if (await Usuario.exists({ email: nuevousuario.email })) {
         throw new UsuarioExistenteError();
     }
