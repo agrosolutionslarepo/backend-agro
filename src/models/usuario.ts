@@ -5,27 +5,29 @@ export interface IUsuario extends Document {
   fechaNacimiento: Date,
   contraseña: String,
   email: String,
-  estado: Boolean
-  empresa: Schema.Types.ObjectId, // Nueva propiedad para la empresa a la que pertenece
+  estado: Boolean, // 1: activo , 2: inactivo
+  empresa: Schema.Types.ObjectId, // id de la empresa
 }
 
 const UsuarioSchema = new Schema({
   nombreUsuario: {
     type: String,
-    required: true, 
-    unique: true,
+    required: true,
   },
   fechaNacimiento: Date,
   contraseña: {
     type: String,
-    required: true, // Hace que el campo sea requerido
+    required: true,
   },
   email: {
     type: String,
-    required: true, 
+    required: true,
     unique: true,
   },
-  estado: Boolean,
+  estado:{
+    type: Boolean,
+    required: true,
+  },
   empresa: {
     type: Schema.Types.ObjectId,
     ref: 'Empresa', // Nombre del modelo de empresa
