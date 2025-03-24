@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Empresa, { IEmpresa } from '../models/empresa';
 import {CustRequest} from '../custrequest';
 import { empresaService } from '../servicios/empresa.service';
@@ -45,57 +45,23 @@ class EmpresaController {
     }
   }
 
-  /*
-  // Actualizar una empresa por su ID
-  public async updateEmpresa(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: IEmpresa = req.body;
-
+  public async deleteEmpresa(req: Request, res: Response, next: NextFunction) { // funciona
     try {
-      const empresaActualizada: IEmpresa | null = await Empresa.findOneAndUpdate(
-        { idNombreEmpresa: id },
-        datosActualizados,
-        { new: true }
-      );
+        const { id } = req.params;
+        const empresaEliminada = await empresaService.deleteEmpresa(id);
 
-      if (empresaActualizada) {
-        res.json(empresaActualizada);
-      } else {
-        res.status(404).json({ error: 'Empresa no encontrada' });
-      }
+        if (!empresaEliminada) {
+            return res.status(404).json({ message: "Empresa no encontrada" });
+        }
+
+        res.status(200).json({ 
+            message: "Empresa eliminada correctamente", 
+            empresa: empresaEliminada 
+        });
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la empresa' });
+        next(error);
     }
-  }*/
-
-  /* DEPRECATED: Un metodo para crear empresa unicamente si no es en el registro de un usuario sin codigo no seria necesario
-  public async createEmpresa(req: Request, res: Response): Promise<Response> { /
-    try {
-      const empresaCreada = await empresaService.createEmpresa(req.body);
-      return res.status(201).json(empresaCreada);
-    } catch (error: any) {
-      return res.status(400).json({ error: error.message });
-    }
-  }*/
-
-  // Eliminar una empresa por su ID
-  public async deleteEmpresa(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
-    try {
-      const empresaEliminada: IEmpresa | null = await Empresa.findOneAndDelete({
-        idNombreEmpresa: id,
-      });
-
-      if (empresaEliminada) {
-        res.json({ message: 'Empresa eliminada correctamente' });
-      } else {
-        res.status(404).json({ error: 'Empresa no encontrada' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la empresa' });
-    }
-  }
+}
 
   public async getEmpresaLogueado(req: CustRequest, res: Response): Promise<void> {
 

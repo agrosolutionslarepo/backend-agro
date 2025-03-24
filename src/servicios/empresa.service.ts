@@ -1,4 +1,5 @@
 import Empresa, { IEmpresa } from '../models/empresa';
+import Usuario from '../models/usuario';
 
 class EmpresaService {
 
@@ -16,7 +17,6 @@ class EmpresaService {
   }
 
   public async updateEmpresa(id: string, data: Partial<IEmpresa>): Promise<IEmpresa | null> { // funciona
-    // Validar los datos de entrada
     if (!data.nombreEmpresa || typeof data.nombreEmpresa !== 'string') {
       throw new Error('El nombre de la empresa es obligatorio y debe ser un string');
     }
@@ -34,31 +34,37 @@ class EmpresaService {
     }
   }
     
-  
+  public async deleteEmpresa(id: string): Promise<IEmpresa | null> { //funciona
+    try {
+        const empresaEliminada = await Empresa.findByIdAndUpdate(
+            id, 
+            { estado: false }, 
+            { new: true }
+        );
 
-  /**
-   * ESTOS NO LOS USAMOS TODAVIA
-   * Busca una empresa por su ID.
-   * @param id El ObjectId (string) de la empresa en MongoDB.
-   * @returns La empresa encontrada, o null si no existe.
-   */
+        if (!empresaEliminada) {
+            throw new Error("Empresa no encontrada");
+        }
+
+        // Desactivar usuarios asociados a la empresa
+        await Usuario.updateMany({ empresa: id }, { estado: false });
+
+        return empresaEliminada;
+    } catch (error: any) {
+        throw new Error(error.message || "Error al eliminar la empresa");
+    }
+  }
+
   public async getEmpresaById(id: string) {
     const empresa = await Empresa.findById(id);
     return empresa;
   }
 
-  /**
-   * Busca una empresa por su código de invitación.
-   * @param codigoInvitacion Código único de invitación.
-   * @returns La empresa encontrada, o null si no existe.
-   */
   public async getEmpresaByCodigo(codigoInvitacion: string) {
     const empresa = await Empresa.findOne({ codigoInvitacion });
     return empresa;
   }
+  
 }
-  // Agrega otros métodos según tus necesidades:
-  // updateEmpresa, deleteEmpresa, etc.
 
-// Exportas una instancia para usar en tus controladores
 export const empresaService = new EmpresaService();

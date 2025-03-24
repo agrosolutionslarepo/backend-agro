@@ -1,7 +1,9 @@
-require('dotenv').config(); // Cargar variables del .env
+import dotenv from 'dotenv';
 const mongoose = require('mongoose');
 
-const DB_URI = process.env.DB_URI; // Leer la URI desde las variables de entorno
+dotenv.config(); // Asegura que las variables del .env sean cargadas
+
+const DB_URI = process.env.DB_URI as string;
 
 if (!DB_URI) {
     console.error("Falta la variable DB_URI en el archivo .env");

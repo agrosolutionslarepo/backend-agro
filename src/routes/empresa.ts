@@ -10,8 +10,7 @@ router.use(tokenValidator);
 // Rutas para la entidad Empresa
 router.put('/updateEmpresa/:id', EmpresaController.updateEmpresa); // funciona
 router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  // funciona
-router.get('/getEmpresaById/:id', EmpresaController.getEmpresaById);
-router.delete('/deleteEmpresa/:id', EmpresaController.deleteEmpresa);
+router.put('/deleteEmpresa/:id', EmpresaController.deleteEmpresa); // funciona
 router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado); 
 
 export default router;
