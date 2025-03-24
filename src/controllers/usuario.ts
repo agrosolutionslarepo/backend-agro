@@ -15,6 +15,21 @@ class UsuarioController {
     }
   };
 
+  // Eliminar un usuario por su ID
+  public  deleteUsuario = async (req: Request, res: Response, next: NextFunction): Promise<void> => { // Funciona 
+    const { id } = req.params; // Obtener el ID del usuario desde la URL
+    
+    try {
+        // Llamar al servicio de eliminación
+        const usuarioEliminado = await usuarioService.deleteUsuario(id);
+        
+        // Enviar la respuesta con el usuario actualizado
+        res.status(200).json(usuarioEliminado);
+    } catch (error) {
+        next(error);
+    }
+  }
+
   // Obtener todas las usuario
   public async getAllUsuario(_req: Request, res: Response): Promise<void> {
     try {
@@ -79,24 +94,7 @@ class UsuarioController {
     }
   }
 
-  // Eliminar un usuario por su ID
-  public async deleteUsuario(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
-    try {
-      const usuarioEliminado: IUsuario | null = await Usuario.findOneAndDelete({
-        idUsuario: id,
-      });
-
-      if (usuarioEliminado) {
-        res.json({ message: 'usuario eliminado correctamente' });
-      } else {
-        res.status(404).json({ error: 'usuario no encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la usuario' });
-    }
-  }  
+  
 
   
 }

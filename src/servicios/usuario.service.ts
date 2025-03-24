@@ -25,10 +25,34 @@ class UsuarioService {
     }
 
     nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, 8);
-    nuevousuario.empresa = empresa._id; // TypeScript ya sabe que empresa no es null
+    nuevousuario.empresa = empresa._id;
 
     return await Usuario.create(nuevousuario);
   }
+
+  public async deleteUsuario(id: string): Promise<IUsuario | null> {
+    try {
+      // Buscar el usuario por ID
+      const usuario = await Usuario.findById(id);
+      console.log(usuario)
+      if (!usuario) {
+          throw new Error('Usuario no encontrado');
+      }
+
+      // Actualizar el estado del usuario a 'false' (inactivo)
+      usuario.estado = false;
+      await usuario.save(); // Guardar el cambio
+
+      return usuario;
+  } catch (error: unknown) { 
+      if (error instanceof Error) {
+          throw new Error(error.message || 'Error al eliminar usuario');
+      }
+      // Si el error no es una instancia de Error, lanzamos un error genérico
+      throw new Error('Error desconocido al eliminar usuario');
+  }
+}
+
 
   /* public getUsuarioByEmail = async (email: string): Promise<IUsuario | null> => {
     try {

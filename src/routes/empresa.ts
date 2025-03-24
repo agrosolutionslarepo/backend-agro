@@ -11,8 +11,6 @@ router.use(tokenValidator);
 router.put('/updateEmpresa/:id', EmpresaController.updateEmpresa); // funciona
 router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  // funciona
 router.get('/getEmpresaById/:id', EmpresaController.getEmpresaById);
-//router.post('/createEmpresa', EmpresaController.createEmpresa);
-router.put('/updateEmpresa/:id', EmpresaController.updateEmpresa);
 router.delete('/deleteEmpresa/:id', EmpresaController.deleteEmpresa);
 router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado); 
 
