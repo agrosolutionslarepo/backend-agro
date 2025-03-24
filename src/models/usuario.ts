@@ -2,6 +2,8 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUsuario extends Document {
   nombreUsuario: String,
+  nombre: String,
+  apellido: String,
   fechaNacimiento: Date,
   contraseña: String,
   email: String,
@@ -14,7 +16,18 @@ const UsuarioSchema = new Schema({
     type: String,
     required: true,
   },
-  fechaNacimiento: Date,
+  nombre: {
+    type: String,
+    required: true,
+  },
+  apellido: {
+    type: String,
+    required: true,
+  },
+  fechaNacimiento: {
+    type: Date,
+    required: true,
+  },
   contraseña: {
     type: String,
     required: true,

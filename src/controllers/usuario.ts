@@ -56,8 +56,6 @@ class UsuarioController {
     }
   }
 
-  
-
   // Actualizar un usuario por su ID
   public async updateUsuario(req: Request, res: Response): Promise<void> {
     const id: number = parseInt(req.params.id, 10);
