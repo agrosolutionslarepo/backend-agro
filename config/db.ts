@@ -1,8 +1,12 @@
-// TODO Agregar un archivo con las variables como la contraseña del connection string y ponerlo en el gitignore
-
+require('dotenv').config(); // Cargar variables del .env
 const mongoose = require('mongoose');
 
-const DB_URI =  'mongodb+srv://agrosolutions:OBtl9NFsABOqWXLu@clusteragrosolutions.npywedp.mongodb.net/'
+const DB_URI = process.env.DB_URI; // Leer la URI desde las variables de entorno
+
+if (!DB_URI) {
+    console.error("Falta la variable DB_URI en el archivo .env");
+    process.exit(1); // Terminar la ejecución si no está definida
+}
 
 module.exports = async () => {
     const connect = async () => {
@@ -11,7 +15,7 @@ module.exports = async () => {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
             });
-            console.log('Conexion correcta');
+            console.log('Conexión correcta a la base de datos');
         } catch (err) {
             console.error('DB: ERROR', err);
         }
