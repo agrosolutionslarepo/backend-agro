@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import Usuario, { IUsuario } from '../models/usuario';
-const bcrypt = require('bcrypt');
 import { usuarioService } from '../servicios/usuario.service';
 
 class UsuarioController {
@@ -57,20 +56,7 @@ class UsuarioController {
     }
   }
 
-  // Crear un nuevo usuario
-  public async createUsuario(req: Request, res: Response): Promise<void> {
-    const nuevousuario: IUsuario = req.body;
-    const salt = await bcrypt.genSalt(8);
-    nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, salt);
-
-    try {
-      const usuarioCreado: IUsuario = await Usuario.create(nuevousuario);
-      res.status(201).json(usuarioCreado);
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ error: 'Error al crear el objeto usuario' });
-    }
-  }
+  
 
   // Actualizar un usuario por su ID
   public async updateUsuario(req: Request, res: Response): Promise<void> {
