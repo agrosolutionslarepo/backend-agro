@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Usuario, { IUsuario } from '../models/usuario';
 import { usuarioService } from '../servicios/usuario.service';
+import { CustRequest } from "../custrequest";
 
 class UsuarioController {
 
@@ -29,6 +30,41 @@ class UsuarioController {
     }
   }
 
+  public async updateUsuario(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { id } = req.params; // Obtener ID del usuario
+    const { nombre, apellido } = req.body; // Obtener datos a actualizar
+
+    try {
+        // Llamar al servicio para actualizar el usuario
+        const usuarioActualizado = await usuarioService.updateUsuario(id, { nombre, apellido });
+
+        // Verificar si el usuario fue encontrado y actualizado
+        if (!usuarioActualizado) {
+            res.status(404).json({ error: 'Usuario no encontrado' });
+            return;
+        }
+
+        res.status(200).json(usuarioActualizado);
+    } catch (error) {
+        next(error);
+    }
+  }
+  
+  public async getUsuariosMismaEmpresa(req: CustRequest, res: Response, next: NextFunction) { // funciona
+    try {
+        const userId = req.user;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Usuario no autenticado" });
+        }
+
+        const usuarios = await usuarioService.getUsuariosMismaEmpresa(userId);
+        res.json(usuarios);
+    } catch (error) {
+        next(error);
+    }
+}
+
   // Obtener todas las usuario
   public async getAllUsuario(_req: Request, res: Response): Promise<void> {
     try {
@@ -56,31 +92,6 @@ class UsuarioController {
     }
   }
 
-  // Actualizar un usuario por su ID
-  public async updateUsuario(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: IUsuario = req.body;
-
-    try {
-      const usuarioActualizado: IUsuario | null = await Usuario.findOneAndUpdate(
-        { idUsuario: id },
-        datosActualizados,
-        { new: true }
-      );
-
-      if (usuarioActualizado) {
-        res.json(usuarioActualizado);
-      } else {
-        res.status(404).json({ error: 'usuario no encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la usuario' });
-    }
-  }
-
-  
-
-  
 }
 
 export default new UsuarioController();

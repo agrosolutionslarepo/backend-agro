@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 class LoginService {
 
-    public async loguear(email: string, contraseña: string) {
+    public async loguear(email: string, contraseña: string) { // funciona
         try {
             // Buscar usuario por email
             const user = await Usuario.findOne({ email });
