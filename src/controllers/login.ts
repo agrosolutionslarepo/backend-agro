@@ -14,11 +14,10 @@ class LoginController {
             // Enviar la respuesta con el JWT
             res.send(result);
         } catch (error) {
-            next(error);
+            next(error); // Pasa el error al middleware de manejo de errores
         }
     }
 
-    
 }
 
 export default new LoginController();
