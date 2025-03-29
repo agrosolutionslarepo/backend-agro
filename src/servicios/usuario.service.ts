@@ -80,10 +80,10 @@ class UsuarioService {
     }
   }
 
-  public async getUsuariosMismaEmpresa(userId: String): Promise<{ nombreUsuario: String }[]> { // funciona
+  public async getUsuariosMismaEmpresa(id: String): Promise<{ nombreUsuario: String }[]> { // funciona
     try {
         // Buscar el usuario logueado para obtener su empresa
-        const usuario = await Usuario.findById(userId);
+        const usuario = await Usuario.findById(id);
         if (!usuario) {
             throw new Error('Usuario no encontrado');
         }

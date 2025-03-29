@@ -5,15 +5,42 @@ import { empresaService } from '../servicios/empresa.service';
 
 class EmpresaController {
 
-  public async updateEmpresa(req: Request, res: Response): Promise<Response> { // funciona
-    const { id } = req.params; // Obtener el ID de la empresa desde la URL
-    const data = req.body;
-  
+  public async updateEmpresa(req: CustRequest, res: Response): Promise<Response> { 
     try {
-      const empresaActualizada = await empresaService.updateEmpresa(id, data);
-      return res.status(200).json(empresaActualizada);
+        const { idEmpresa } = req.user; // ✅ Obtener el ID de la empresa desde el token
+        const data = req.body;
+
+        if (!idEmpresa) {
+            return res.status(400).json({ error: "ID de empresa no encontrado en el token" });
+        }
+
+        const empresaActualizada = await empresaService.updateEmpresa(idEmpresa, data);
+        return res.status(200).json(empresaActualizada);
     } catch (error: any) {
-      return res.status(400).json({ error: error.message });
+        return res.status(400).json({ error: error.message });
+    }
+  }
+
+  public async deleteEmpresa(req: CustRequest, res: Response, next: NextFunction) { // funciona
+    try {
+        const { idEmpresa } = req.user; // ✅ Obtener ID de la empresa desde el token
+
+        if (!idEmpresa) {
+            return res.status(400).json({ message: "ID de empresa no encontrado en el token" });
+        }
+
+        const empresaEliminada = await empresaService.deleteEmpresa(idEmpresa);
+
+        if (!empresaEliminada) {
+            return res.status(404).json({ message: "Empresa no encontrada" });
+        }
+
+        res.status(200).json({ 
+            message: "Empresa eliminada correctamente", 
+            empresa: empresaEliminada 
+        });
+    } catch (error) {
+        next(error);
     }
   }
 
@@ -44,24 +71,6 @@ class EmpresaController {
       res.status(500).json({ error: 'Error al obtener la empresa' });
     }
   }
-
-  public async deleteEmpresa(req: Request, res: Response, next: NextFunction) { // funciona
-    try {
-        const { id } = req.params;
-        const empresaEliminada = await empresaService.deleteEmpresa(id);
-
-        if (!empresaEliminada) {
-            return res.status(404).json({ message: "Empresa no encontrada" });
-        }
-
-        res.status(200).json({ 
-            message: "Empresa eliminada correctamente", 
-            empresa: empresaEliminada 
-        });
-    } catch (error) {
-        next(error);
-    }
-}
 
   public async getEmpresaLogueado(req: CustRequest, res: Response): Promise<void> {
 

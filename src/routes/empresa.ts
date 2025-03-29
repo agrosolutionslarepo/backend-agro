@@ -1,16 +1,12 @@
 import express from 'express';
 import EmpresaController from '../controllers/empresa';
-const tokenValidator = require ('../middleware/tokenValidator');
-
 
 const router = express.Router();
-
-router.use(tokenValidator);
 
 // Rutas para la entidad Empresa
 router.put('/updateEmpresa/:id', EmpresaController.updateEmpresa); // funciona
 router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  // funciona
-router.put('/deleteEmpresa/:id', EmpresaController.deleteEmpresa); // funciona
+router.put('/deleteEmpresa', EmpresaController.deleteEmpresa); // funciona
 router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado); 
 
 export default router;

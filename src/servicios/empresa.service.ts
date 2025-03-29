@@ -34,7 +34,7 @@ class EmpresaService {
     }
   }
     
-  public async deleteEmpresa(id: string): Promise<IEmpresa | null> { //funciona
+  public async deleteEmpresa(id: String): Promise<IEmpresa | null> { //funciona
     try {
         const empresaEliminada = await Empresa.findByIdAndUpdate(
             id, 

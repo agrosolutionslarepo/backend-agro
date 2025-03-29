@@ -7,7 +7,7 @@ export interface IUsuario extends Document {
   fechaNacimiento: Date,
   contraseña: String,
   email: String,
-  estado: Boolean, // 1: activo , 2: inactivo
+  estado: Boolean,
   empresa: Schema.Types.ObjectId, // id de la empresa
 }
 
