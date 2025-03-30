@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 class UsuarioService {
 
-  public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> { // funciona
+  public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> {
     if (await Usuario.exists({ email: nuevousuario.email })) {
         throw new UsuarioExistenteError();
     }
@@ -14,17 +14,25 @@ class UsuarioService {
     let empresa: IEmpresa | null = null;
 
     if (codigoInvitacion) {
+        // Si hay código de invitación, busca la empresa asociada
         empresa = await empresaService.getEmpresaByCodigo(codigoInvitacion);
         if (!empresa) {
             throw new UsuarioExistenteError("Código de invitación inválido o empresa no encontrada");
         }
+        // Si el usuario se está uniendo con invitación, no es administrador
+        nuevousuario.administrador = false;
     } else if (empresaData) {
-        empresaData.fechaCreacion = new Date(); // Asignar la fecha actual
+        // Si está creando una empresa nueva, asignar fecha de creación y registrar la empresa
+        empresaData.fechaCreacion = new Date();
         empresa = await empresaService.createEmpresa(empresaData);
+        
+        // El primer usuario que crea la empresa es administrador
+        nuevousuario.administrador = true;
     } else {
         throw new UsuarioExistenteError("Faltan datos para empresa");
     }
 
+    // Hashear la contraseña antes de guardar
     nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, 8);
     nuevousuario.empresa = empresa._id;
 

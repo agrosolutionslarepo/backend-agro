@@ -8,6 +8,7 @@ export interface IUsuario extends Document {
   contraseña: String,
   email: String,
   estado: Boolean,
+  administrador: Boolean,
   empresa: Schema.Types.ObjectId, // id de la empresa
 }
 
@@ -38,6 +39,10 @@ const UsuarioSchema = new Schema({
     unique: true,
   },
   estado:{
+    type: Boolean,
+    required: true,
+  },
+  administrador:{
     type: Boolean,
     required: true,
   },

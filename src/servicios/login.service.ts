@@ -31,6 +31,7 @@ class LoginService {
                 id: user.id,
                 nombre: user.nombre,
                 apellido: user.apellido,
+                administrador: user.administrador,
                 nombreUsuario: user.nombreUsuario,
                 email: user.email,
                 idEmpresa: user.empresa,

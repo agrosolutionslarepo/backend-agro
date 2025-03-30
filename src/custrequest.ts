@@ -5,6 +5,7 @@ export interface IUserToken {
   id: string;
   nombre: string,
   apellido: string,
+  administrador: boolean,
   nombreUsuario: string;
   email: string;
   idEmpresa: string;
