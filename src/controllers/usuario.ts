@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import Usuario, { IUsuario } from '../models/usuario';
 import { usuarioService } from '../servicios/usuario.service';
 import { CustRequest } from "../custrequest";
 
@@ -15,63 +14,70 @@ class UsuarioController {
     }
   };
 
-  public deleteUsuario = async (req: Request, res: Response, next: NextFunction): Promise<void> => { // funciona
-    const { id } = (req as CustRequest).user; // Obtener el ID del usuario autenticado desde el JWT
-    
+  public async deleteUsuario(req: CustRequest, res: Response, next: NextFunction) {
     try {
-        const usuarioEliminado = await usuarioService.deleteUsuario(id);
-        
-        res.status(200).json(usuarioEliminado);
+        const idUsuario = req.user?.id;
+
+        if (!idUsuario) {
+            return res.status(400).json({ message: "ID de usuario no encontrado en el token" });
+        }
+
+        const usuarioEliminado = await usuarioService.deleteUsuario(idUsuario);
+
+        if (!usuarioEliminado) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        return res.status(200).json({
+            message: "Usuario eliminado correctamente",
+            usuario: usuarioEliminado,
+        });
     } catch (error) {
-        next(error);
+        next(error); // Deja que Express maneje el error con su middleware
     }
   }
 
-  public async updateUsuario(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { id } = (req as CustRequest).user;
-    const { nombre, apellido } = req.body; 
+  public async updateUsuario(req: CustRequest, res: Response, next: NextFunction) {
+    const id = req.user?.id;
+
+    // Verificamos si 'id' es undefined y devolvemos un error si es el caso
+    if (!id) {
+        return res.status(400).json({ error: 'ID de usuario no encontrado en el token' });
+    }
+
+    const { nombre, apellido } = req.body;
 
     try {
         const usuarioActualizado = await usuarioService.updateUsuario(id, { nombre, apellido });
 
         if (!usuarioActualizado) {
-            res.status(404).json({ error: 'Usuario no encontrado' });
-            return;
+            return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Usuario actualizado correctamente",
             usuario: usuarioActualizado
         });
     } catch (error) {
-        next(error);
+        next(error); // Delega el error al middleware de Express
     }
   }
   
-  public async getUsuariosMismaEmpresa(req: Request, res: Response, next: NextFunction) { // funciona
+  public async getUsuariosMismaEmpresa(req: CustRequest, res: Response) {
     try {
-      const { id } = (req as CustRequest).user;
+        const id = req.user?.id;
 
         if (!id) {
             return res.status(401).json({ error: "Usuario no autenticado" });
         }
 
         const usuarios = await usuarioService.getUsuariosMismaEmpresa(id);
-        res.json(usuarios);
-    } catch (error) {
-        next(error);
-    }
-}
-
-  // Obtener todas las usuario
-  public async getAllUsuario(_req: Request, res: Response): Promise<void> {
-    try {
-      const usuarioAll: IUsuario[] = await Usuario.find();
-      res.json(usuarioAll);
-    } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los usuarios' });
+        return res.json(usuarios);
+    } catch (error: any) {
+        return res.status(500).json({ error: error.message || 'Error al obtener los usuarios' });
     }
   }
+
 
 }
 

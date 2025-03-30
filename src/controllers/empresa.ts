@@ -1,19 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
-import Empresa, { IEmpresa } from '../models/empresa';
-import {CustRequest} from '../custrequest';
+import { Response, NextFunction } from 'express';
+import { CustRequest } from '../custrequest';
 import { empresaService } from '../servicios/empresa.service';
 
 class EmpresaController {
 
-  public async updateEmpresa(req: CustRequest, res: Response): Promise<Response> { 
+  public static async updateEmpresa(req: CustRequest, res: Response): Promise<Response> {
+    const idEmpresa = req.user?.idEmpresa;
+    const data = req.body;
+
+    if (!idEmpresa) {
+        return res.status(400).json({ error: "ID de empresa no encontrado en el token" });
+    }
+
     try {
-        const { idEmpresa } = req.user; // ✅ Obtener el ID de la empresa desde el token
-        const data = req.body;
-
-        if (!idEmpresa) {
-            return res.status(400).json({ error: "ID de empresa no encontrado en el token" });
-        }
-
         const empresaActualizada = await empresaService.updateEmpresa(idEmpresa, data);
         return res.status(200).json(empresaActualizada);
     } catch (error: any) {
@@ -21,9 +20,9 @@ class EmpresaController {
     }
   }
 
-  public async deleteEmpresa(req: CustRequest, res: Response, next: NextFunction) { // funciona
+  public static async deleteEmpresa(req: CustRequest, res: Response, next: NextFunction) {
     try {
-        const { idEmpresa } = req.user; // ✅ Obtener ID de la empresa desde el token
+        const idEmpresa = req.user?.idEmpresa;
 
         if (!idEmpresa) {
             return res.status(400).json({ message: "ID de empresa no encontrado en el token" });
@@ -35,15 +34,16 @@ class EmpresaController {
             return res.status(404).json({ message: "Empresa no encontrada" });
         }
 
-        res.status(200).json({ 
-            message: "Empresa eliminada correctamente", 
-            empresa: empresaEliminada 
+        return res.status(200).json({
+            message: "Empresa eliminada correctamente",
+            empresa: empresaEliminada,
         });
     } catch (error) {
-        next(error);
+        next(error); // Envia el error al middleware de manejo de errores
     }
   }
 
+/*
   // Obtener todas las empresas
   public async getAllEmpresas(_req: Request, res: Response, next: any): Promise<void> { // funciona
     try {
@@ -53,8 +53,8 @@ class EmpresaController {
       res.status(500).json({ error: 'Error al obtener las empresas' });
       next(error);
     }
-  }
-
+  }*/
+/*
   // Obtener una empresa por su ID
   public async getEmpresaById(req: Request, res: Response): Promise<void> { 
     const id: number = parseInt(req.params.id, 10);
@@ -70,8 +70,8 @@ class EmpresaController {
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener la empresa' });
     }
-  }
-
+  }*/
+/*
   public async getEmpresaLogueado(req: CustRequest, res: Response): Promise<void> {
 
     const userId = req.user;
@@ -90,7 +90,7 @@ class EmpresaController {
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener la empresa' });
     }
-  }
+  }*/
 }
 
-export default new EmpresaController();
+export default EmpresaController;

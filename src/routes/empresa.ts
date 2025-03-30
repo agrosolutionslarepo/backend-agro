@@ -3,10 +3,10 @@ import EmpresaController from '../controllers/empresa';
 
 const router = express.Router();
 
-// Rutas para la entidad Empresa
-router.put('/updateEmpresa/:id', EmpresaController.updateEmpresa); // funciona
-router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  // funciona
-router.put('/deleteEmpresa', EmpresaController.deleteEmpresa); // funciona
-router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado); 
+// ✅ Llamamos a los métodos como estáticos
+router.put('/updateEmpresa', EmpresaController.updateEmpresa);
+router.put('/deleteEmpresa', EmpresaController.deleteEmpresa);
+/*router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  
+router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado);*/
 
 export default router;

@@ -9,5 +9,5 @@ export interface IUserToken {
 }
 
 export interface CustRequest extends Request {
-  user: IUserToken;
+  user?: IUserToken;
 }
