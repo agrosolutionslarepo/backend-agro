@@ -3,6 +3,8 @@ import { Request } from "express";
 // Definimos la estructura del usuario dentro del request
 export interface IUserToken {
   id: string;
+  nombre: string,
+  apellido: string,
   nombreUsuario: string;
   email: string;
   idEmpresa: string;

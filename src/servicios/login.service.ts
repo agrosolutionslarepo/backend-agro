@@ -29,6 +29,8 @@ class LoginService {
             // Información del token
             const infoToken = {
                 id: user.id,
+                nombre: user.nombre,
+                apellido: user.apellido,
                 nombreUsuario: user.nombreUsuario,
                 email: user.email,
                 idEmpresa: user.empresa,
