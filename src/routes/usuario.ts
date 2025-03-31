@@ -1,13 +1,14 @@
 import express from 'express';
 import UsuarioController from '../controllers/usuario';
+const tokenValidator = require ('../middleware/tokenValidator');
 
 const router = express.Router();
 
-// Rutas para la entidad Empresa
-router.get('/getAllEmpresas', UsuarioController.getAllUsuarioInformacion); 
-router.get('/:id', UsuarioController.getUsuarioInformacionById);
-router.post('/', UsuarioController.createUsuarioInformacion);
-router.put('/:id', UsuarioController.updateUsuarioInformacion);
-router.delete('/:id', UsuarioController.deleteUsuarioInformacion);
+// Rutas para la entidad Usuario
+router.post('/registrarse', UsuarioController.registrarse); // funciona
+router.use(tokenValidator);
+router.put('/deleteUsuario', UsuarioController.deleteUsuario); // usa instancia
+router.put('/updateUsuario', UsuarioController.updateUsuario); // usa instancia
+router.get('/getUsuariosMismaEmpresa', UsuarioController.getUsuariosMismaEmpresa); // usa instancia
 
 export default router;

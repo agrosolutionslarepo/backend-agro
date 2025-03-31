@@ -1,17 +1,25 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IEmpresa extends Document {
-  idNombreEmpresa: Number,
   nombreEmpresa: String,
+  estado: Boolean,
+  fechaCreacion: Date
 }
 
 const EmpresaSchema = new Schema({
-  idNombreEmpresa: {
-    type: Number,
-    required: true, // Hace que el campo sea requerido
-    unique: true,   // Hace que el campo sea único
+  nombreEmpresa: {
+    type: String,
+    required: true,
+    unique: true
   },
-  nombreEmpresa: String,
+  estado:{
+    type: Boolean,
+    required: true,
+  },
+  fechaCreacion: {
+    type: Date,
+    required: true
+  }
 });
 
 export default mongoose.model<IEmpresa>('Empresa', EmpresaSchema);

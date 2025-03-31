@@ -1,90 +1,84 @@
-import { Request, Response } from 'express';
-import UsuarioInformacion, { IUsuarioInformacion } from '../models/usuarioInformacion';
-const bcrypt = require('bcrypt');
+import { Request, Response, NextFunction } from 'express';
+import { usuarioService } from '../servicios/usuario.service';
+import { CustRequest } from "../custrequest";
 
 class UsuarioController {
-  // Obtener todas las usuarioInformacions
-  public async getAllUsuarioInformacion(_req: Request, res: Response): Promise<void> {
+
+  public registrarse = async (req: Request, res: Response, next: NextFunction): Promise<void> => { // funciona
     try {
-      const usuarioInformacionAll: IUsuarioInformacion[] = await UsuarioInformacion.find();
-      res.json(usuarioInformacionAll);
+        const { codigoInvitacion, empresaData, ...usuarioData } = req.body;
+        const usuarioCreado = await usuarioService.registrarse(usuarioData, codigoInvitacion, empresaData);
+        res.status(201).json(usuarioCreado);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener los usuarioInformacions' });
+        next(error);
+    }
+  };
+
+  public async deleteUsuario(req: CustRequest, res: Response, next: NextFunction) {
+    try {
+        const idUsuario = req.user?.id;
+
+        if (!idUsuario) {
+            return res.status(400).json({ message: "ID de usuario no encontrado en el token" });
+        }
+
+        const usuarioEliminado = await usuarioService.deleteUsuario(idUsuario);
+
+        if (!usuarioEliminado) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        return res.status(200).json({
+            message: "Usuario eliminado correctamente",
+            usuario: usuarioEliminado,
+        });
+    } catch (error) {
+        next(error); // Deja que Express maneje el error con su middleware
     }
   }
 
-  // Obtener un usuarioInformacion por su ID
-  public async getUsuarioInformacionById(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
+  public async updateUsuario(req: CustRequest, res: Response, next: NextFunction) {
+    const id = req.user?.id;
+
+    // Verificamos si 'id' es undefined y devolvemos un error si es el caso
+    if (!id) {
+        return res.status(400).json({ error: 'ID de usuario no encontrado en el token' });
+    }
+
+    const { nombre, apellido } = req.body;
 
     try {
-      const usuarioInformacion: IUsuarioInformacion | null = await UsuarioInformacion.findOne({ idUsuario: id });
+        const usuarioActualizado = await usuarioService.updateUsuario(id, { nombre, apellido });
 
-      if (usuarioInformacion) {
-        res.json(usuarioInformacion);
-      } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
-      }
+        if (!usuarioActualizado) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        return res.status(200).json({
+            message: "Usuario actualizado correctamente",
+            usuario: usuarioActualizado
+        });
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener el objeto usuarioInformacion' });
+        next(error); // Delega el error al middleware de Express
+    }
+  }
+  
+  public async getUsuariosMismaEmpresa(req: CustRequest, res: Response) {
+    try {
+        const id = req.user?.id;
+
+        if (!id) {
+            return res.status(401).json({ error: "Usuario no autenticado" });
+        }
+
+        const usuarios = await usuarioService.getUsuariosMismaEmpresa(id);
+        return res.json(usuarios);
+    } catch (error: any) {
+        return res.status(500).json({ error: error.message || 'Error al obtener los usuarios' });
     }
   }
 
-  // Crear un nuevo usuarioInformacion
-  public async createUsuarioInformacion(req: Request, res: Response): Promise<void> {
-    const nuevousuarioInformacion: IUsuarioInformacion = req.body;
-    const salt = await bcrypt.genSalt(8);
-    nuevousuarioInformacion.contraseña = await bcrypt.hash(nuevousuarioInformacion.contraseña, salt);
 
-    try {
-      const usuarioInformacionCreado: IUsuarioInformacion = await UsuarioInformacion.create(nuevousuarioInformacion);
-      res.status(201).json(usuarioInformacionCreado);
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ error: 'Error al crear el objeto usuarioInformacion' });
-    }
-  }
-
-  // Actualizar un usuarioInformacion por su ID
-  public async updateUsuarioInformacion(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: IUsuarioInformacion = req.body;
-
-    try {
-      const usuarioInformacionActualizado: IUsuarioInformacion | null = await UsuarioInformacion.findOneAndUpdate(
-        { idUsuario: id },
-        datosActualizados,
-        { new: true }
-      );
-
-      if (usuarioInformacionActualizado) {
-        res.json(usuarioInformacionActualizado);
-      } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la usuarioInformacion' });
-    }
-  }
-
-  // Eliminar un usuarioInformacion por su ID
-  public async deleteUsuarioInformacion(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
-    try {
-      const usuarioInformacionEliminado: IUsuarioInformacion | null = await UsuarioInformacion.findOneAndDelete({
-        idUsuario: id,
-      });
-
-      if (usuarioInformacionEliminado) {
-        res.json({ message: 'usuarioInformacion eliminado correctamente' });
-      } else {
-        res.status(404).json({ error: 'usuarioInformacion no encontrado' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la usuarioInformacion' });
-    }
-  }
 }
 
 export default new UsuarioController();

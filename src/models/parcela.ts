@@ -2,7 +2,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IEmpresa } from './empresa';
 
 export interface IParcela extends Document {
-  idParcela: Number,
   nombreParcela: String,
   tipoCultivo: String,
   tamaño: Number,
@@ -13,11 +12,6 @@ export interface IParcela extends Document {
 }
 
 const ParcelaSchema = new Schema({
-  idParcela: {
-    type: Number,
-    required: true, // Hace que el campo sea requerido
-    unique: true,   // Hace que el campo sea único
-  },
   nombreParcela: String,
   tipoCultivo: String,
   tamaño: Number,

@@ -6,11 +6,7 @@ export interface IIngresoUsuario extends Document {
 }
 
 const IngresoUsuarioSchema = new Schema({
-  idUsuario: {
-    type: Number,
-    required: true,
-    unique: true, 
-  },
+  idUsuario: Number,
   fechaIngreso: Date,
 });
 
