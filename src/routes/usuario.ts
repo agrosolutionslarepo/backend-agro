@@ -7,8 +7,8 @@ const router = express.Router();
 // Rutas para la entidad Usuario
 router.post('/registrarse', UsuarioController.registrarse); // funciona
 router.use(tokenValidator);
-router.put('/deleteUsuario', UsuarioController.deleteUsuario); // usa instancia
-router.put('/updateUsuario', UsuarioController.updateUsuario); // usa instancia
-router.get('/getUsuariosMismaEmpresa', UsuarioController.getUsuariosMismaEmpresa); // usa instancia
+router.put('/deleteUsuario', UsuarioController.deleteUsuario);
+router.put('/updateUsuario', UsuarioController.updateUsuario);
+router.get('/getUsuariosMismaEmpresa', UsuarioController.getUsuariosMismaEmpresa);
 
 export default router;

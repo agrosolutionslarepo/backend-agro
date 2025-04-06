@@ -36,7 +36,6 @@ class CosechaController {
     // Validar los datos de entrada
     if (
       !nuevaCosecha ||
-      typeof nuevaCosecha.idCosecha !== 'number' ||
       typeof nuevaCosecha.nombreCosecha !== 'string' ||
       typeof nuevaCosecha.tipoCultivo !== 'string' ||
       typeof nuevaCosecha.cantidadCosechado !== 'number' ||

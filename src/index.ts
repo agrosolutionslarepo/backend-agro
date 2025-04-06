@@ -2,6 +2,7 @@ import express from 'express'
 import empresaRoutes from './routes/empresa';
 import usuarioRoutes from './routes/usuario';
 import LoginRoutes from './routes/login';
+import AuthRoutes from './routes/auth';
 const tokenValidator = require ('./middleware/tokenValidator');
 const errorHandler = require ('./middleware/errorHandler');
 require('dotenv').config();
@@ -28,6 +29,7 @@ app.listen(PORT, () => {
 app.use('/empresas',tokenValidator, empresaRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/login', LoginRoutes);
+app.use('/auth', AuthRoutes);
 //errorHandler To do error que ocurra que en runtime que sea encapsulado den try catch y enviado a travez de la funcion next termina en el handdler
 app.use(errorHandler);
 initDB();

@@ -36,11 +36,9 @@ class SemillaController {
     // Validar los datos de entrada
     if (
       !nuevaSemilla ||
-      typeof nuevaSemilla.idSemilla !== 'number' ||
       typeof nuevaSemilla.nombreSemilla !== 'string' ||
       typeof nuevaSemilla.tipoSemilla !== 'string' ||
-      typeof nuevaSemilla.cantidadSemilla !== 'number' ||
-      typeof nuevaSemilla.estado !== 'boolean'
+      typeof nuevaSemilla.cantidadSemilla !== 'number'
     ) {
       return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
     }
