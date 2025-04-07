@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { usuarioService } from '../servicios/usuario.service';
-import { CustRequest } from "../custrequest";
 
 class UsuarioController {
 
@@ -14,7 +13,7 @@ class UsuarioController {
     }
   };
 
-  public async deleteUsuario(req: CustRequest, res: Response, next: NextFunction) {
+  public async deleteUsuario(req: Request, res: Response, next: NextFunction) {
     try {
         const idUsuario = req.user?.id;
 
@@ -37,7 +36,7 @@ class UsuarioController {
     }
   }
 
-  public async updateUsuario(req: CustRequest, res: Response, next: NextFunction) {
+  public async updateUsuario(req: Request, res: Response, next: NextFunction) {
     const id = req.user?.id;
 
     // Verificamos si 'id' es undefined y devolvemos un error si es el caso
@@ -63,7 +62,7 @@ class UsuarioController {
     }
   }
   
-  public async getUsuariosMismaEmpresa(req: CustRequest, res: Response) {
+  public async getUsuariosMismaEmpresa(req: Request, res: Response) {
     try {
         const id = req.user?.id;
 

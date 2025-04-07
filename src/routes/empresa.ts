@@ -6,7 +6,6 @@ const router = express.Router();
 // ✅ Llamamos a los métodos como estáticos
 router.put('/updateEmpresa', EmpresaController.updateEmpresa);
 router.put('/deleteEmpresa', EmpresaController.deleteEmpresa);
-/*router.get('/getAllEmpresas', EmpresaController.getAllEmpresas);  
-router.get('/getEmpresaLogueado', EmpresaController.getEmpresaLogueado);*/
+
 
 export default router;

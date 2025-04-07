@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
     "typeRoots": [
-      "typings",
+      "./src/types/express",
+      "./src/types/",
+      "./src/types/express/index.d.ts",
       "./node_modules/@types"
     ],
-    "types": ["node"],
+    "types": ["node", "express"],
     "rootDir": "./src", // Carpeta raíz de los archivos fuente TypeScript
     "declaration": true,
 
@@ -116,6 +118,7 @@
     "resolveJsonModule": true /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*.ts",
-              "typings/*"], // Patrón de inclusión de archivos TypeScript
+              "src/types/**/*",
+              "src/types/global.d.ts"], // Patrón de inclusión de archivos TypeScript
   "exclude": ["node_modules"] // Carpetas a excluir del proceso de compilación
 }
