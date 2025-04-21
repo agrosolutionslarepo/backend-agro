@@ -15,6 +15,8 @@ const ERROR_HANDLERS = {
 
   UsuarioEliminadoError: (res: Response, error: Error) =>
     res.status(403).json({ error: error.message }), 
+  EnvVarMissingError: (res: Response, error: Error) => 
+    res.status(500).json({ error: error.message }),
 
   defaultError: (res: Response, error: Error) => {
     console.error("Unhandled error:", error.name, error.message); // Log para depuración
