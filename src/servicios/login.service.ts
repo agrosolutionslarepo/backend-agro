@@ -1,5 +1,6 @@
 import Usuario from '../models/usuario';
 import { InvalidCredentialsError, UsuarioEliminadoError } from '../errors/loginErrors';
+import {  UsuarioGoogleError } from '../errors/usuarioErrors';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -53,6 +54,10 @@ class LoginService {
             const user = await Usuario.findById({ id });
             if (!user) {
                 throw new InvalidCredentialsError();
+            }
+            
+            if (user.authType == "google") {
+                throw new UsuarioGoogleError();
             }
 
             if (user.estado === false) {
