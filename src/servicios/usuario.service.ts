@@ -102,6 +102,10 @@ class UsuarioService {
         if (datosActualizados.contraseña !== undefined) {
             usuario.contraseña = await bcrypt.hash(datosActualizados.contraseña, 8);
             console.log(usuario.contraseña);
+        }  else{
+          
+          throw new Error('invalid credentials');
+
         }
 
         // Guardar los cambios
