@@ -101,6 +101,7 @@ class UsuarioService {
         // Verificar qué campos se actualizarán
         if (datosActualizados.contraseña !== undefined) {
             usuario.contraseña = await bcrypt.hash(datosActualizados.contraseña, 8);
+            console.log(usuario.contraseña);
         }
 
         // Guardar los cambios

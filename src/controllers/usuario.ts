@@ -49,7 +49,7 @@ class UsuarioController {
 
     try {
         const check = await loginService.validarContraseña(id, oldContraseña);
-        const usuarioActualizado = await usuarioService.cambioContraseña(id, check, { contraseña })
+        const usuarioActualizado = await usuarioService.cambioContraseña(check, id, { contraseña })
 
         if (!usuarioActualizado) {
             return res.status(404).json({ error: 'Usuario no encontrado' });

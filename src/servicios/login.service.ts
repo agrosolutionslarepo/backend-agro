@@ -51,7 +51,7 @@ class LoginService {
     public async validarContraseña(id: string, contraseña: string) {
 
         try {
-            const user = await Usuario.findById({ id });
+            const user = await Usuario.findById(id);
             if (!user) {
                 throw new InvalidCredentialsError();
             }
