@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { usuarioService } from '../servicios/usuario.service';
+import { loginService } from '../servicios/login.service';
 
 class UsuarioController {
 
@@ -33,6 +34,33 @@ class UsuarioController {
         });
     } catch (error) {
         next(error); // Deja que Express maneje el error con su middleware
+    }
+  }
+
+  public async updateContraseña(req: Request, res: Response, next: NextFunction) {
+    const id = req.user?.id;
+
+    // Verificamos si 'id' es undefined y devolvemos un error si es el caso
+    if (!id) {
+        return res.status(400).json({ error: 'ID de usuario no encontrado en el token' });
+    }
+
+    const {oldContraseña, contraseña } = req.body;
+
+    try {
+        const check = await loginService.validarContraseña(id, oldContraseña);
+        const usuarioActualizado = await usuarioService.cambioContraseña(check, id, { contraseña })
+
+        if (!usuarioActualizado) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        return res.status(200).json({
+            message: "Usuario actualizado correctamente",
+            usuario: usuarioActualizado
+        });
+    } catch (error) {
+        next(error); // Delega el error al middleware de Express
     }
   }
 

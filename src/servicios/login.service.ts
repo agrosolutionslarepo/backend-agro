@@ -1,5 +1,6 @@
 import Usuario from '../models/usuario';
 import { InvalidCredentialsError, UsuarioEliminadoError } from '../errors/loginErrors';
+import {  UsuarioGoogleError } from '../errors/usuarioErrors';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -46,6 +47,38 @@ class LoginService {
             throw error;
         }
     }
+
+    public async validarContraseña(id: string, contraseña: string) {
+
+        try {
+            const user = await Usuario.findById(id);
+            if (!user) {
+                throw new InvalidCredentialsError();
+            }
+            
+            if (user.authType == "google") {
+                throw new UsuarioGoogleError();
+            }
+
+            if (user.estado === false) {
+                throw new UsuarioEliminadoError();
+            }
+
+            const passwordCorrect = await bcrypt.compare(contraseña, user.contraseña);
+            if (!passwordCorrect) {
+                throw new InvalidCredentialsError();
+            }
+
+            return passwordCorrect;
+
+        }
+
+        catch (error) {
+            throw error;
+        }
+
+    }
+
 
 }
 

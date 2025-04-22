@@ -88,6 +88,39 @@ class UsuarioService {
     }
   }
 
+  public async cambioContraseña(check: boolean, id: string, datosActualizados: Partial<IUsuario>): Promise<IUsuario | null> {
+    try {
+        if(!check){
+          throw new Error('invalid credentials');
+        }
+        const usuario = await Usuario.findById(id);
+        if (!usuario) {
+            throw new Error('Usuario no encontrado');
+        }
+
+        // Verificar qué campos se actualizarán
+        if (datosActualizados.contraseña !== undefined) {
+            usuario.contraseña = await bcrypt.hash(datosActualizados.contraseña, 8);
+            console.log(usuario.contraseña);
+        }  else{
+          
+          throw new Error('invalid credentials');
+
+        }
+
+        // Guardar los cambios
+        await usuario.save();
+
+        return usuario; //revisar
+      
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Error al actualizar usuario');
+        }
+        throw new Error('Error desconocido al actualizar usuario');
+    }
+  }
+
   public async getUsuariosMismaEmpresa(id: String): Promise<{ nombreUsuario: String }[]> { // funciona
     try {
         // Buscar el usuario logueado para obtener su empresa
