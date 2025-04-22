@@ -3,7 +3,6 @@ import express from 'express';
 import dotenv  from 'dotenv';                // 🟢 siempre primero
 dotenv.config();                             // 🟢
 
-//import { parseSymbolsStrict } from './middleware/envSybols';   // 🟢 typo fixed
 import priceRoutes   from './routes/precios';
 import empresaRoutes from './routes/empresa';
 import usuarioRoutes from './routes/usuario';
@@ -29,7 +28,7 @@ app.use('/empresas', tokenValidator, empresaRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/login',    loginRoutes);
 app.use('/auth',     authRoutes);
-app.use('/grain',    priceRoutes);
+app.use('/grain',tokenValidator ,priceRoutes);
 
 app.get('/ping', (_req, res) => {
   console.log('someone pinged here!!');

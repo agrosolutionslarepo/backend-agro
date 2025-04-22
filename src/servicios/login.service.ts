@@ -47,6 +47,34 @@ class LoginService {
         }
     }
 
+    public async validarContraseña(id: string, contraseña: string) {
+
+        try {
+            const user = await Usuario.findById({ id });
+            if (!user) {
+                throw new InvalidCredentialsError();
+            }
+
+            if (user.estado === false) {
+                throw new UsuarioEliminadoError();
+            }
+
+            const passwordCorrect = await bcrypt.compare(contraseña, user.contraseña);
+            if (!passwordCorrect) {
+                throw new InvalidCredentialsError();
+            }
+
+            return passwordCorrect;
+
+        }
+
+        catch (error) {
+            throw error;
+        }
+
+    }
+
+
 }
 
 export const loginService = new LoginService();
