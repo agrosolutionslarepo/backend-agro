@@ -26,4 +26,9 @@ export class InviteCodeNotFoundError extends Error {
     }
   }
 
-  
+  export class InviteCodeCompanyMismatchError extends Error {
+    constructor() {
+      super('Invite code already exists for this company');
+      this.name = 'InviteCodeDuplicateError';
+    }
+  }

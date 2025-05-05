@@ -1,9 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {
-  createInviteCode,
-  disableInviteCode,
-  checkInviteCode,
-} from '../servicios/inviteCodes.service';
+import { inviteCodeService } from '../servicios/inviteCodes.service';
 import {
   InviteCodeDuplicateError,
 } from '../errors/inviteCodesError';
@@ -22,7 +18,7 @@ class InviteCodesController {
           for (let attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
             const code = randomString(6);
             try {
-              const doc = await createInviteCode(idEmpresa, code);
+              const doc = await inviteCodeService.createInviteCode(idEmpresa, code);
               return res.status(201).json(doc);
             } catch (err) {
               if (err instanceof InviteCodeDuplicateError) {
@@ -45,7 +41,7 @@ public async disableInviteCodes(req: Request, res: Response, next: NextFunction)
     console.log(req.body.code);
     const idEmpresa = req.user?.idEmpresa;
     if (!idEmpresa) return res.status(403).json({ error: 'empresaId missing in token' });
-    disableInviteCode(idEmpresa, req.body.code);
+    inviteCodeService.disableInviteCode(idEmpresa, req.body.code);
     return res.status(200).send('done');
   } catch (e) {
     next(e);
@@ -54,7 +50,7 @@ public async disableInviteCodes(req: Request, res: Response, next: NextFunction)
 
 public async checkInviteCodes(req: Request, res: Response, next: NextFunction) {
   try {
-    const doc = await checkInviteCode(req.body.code);
+    const doc = await inviteCodeService.checkInviteCode(req.body.code);
     res.json({ valid: true, empresa: doc.empresa });
   } catch (e) {
     next(e);

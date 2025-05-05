@@ -14,7 +14,9 @@ import {
  *   • Dentro de **la misma empresa** el par (codigo, empresa) debe ser único
  *     sin importar si el registro previo está habilitado o no.
  */
-export async function createInviteCode(
+class InviteCodeService {
+
+public async createInviteCode(
     empresaId: string | Types.ObjectId,
     code: string
   ): Promise<IInviteCodes> {
@@ -40,7 +42,7 @@ export async function createInviteCode(
 /**
  * Deshabilita un código (no importa a qué empresa pertenece).
  */
-export async function disableInviteCode(
+public async disableInviteCode(
   empresaId: string | Types.ObjectId,
   code: string
 ): Promise<IInviteCodes> {
@@ -64,16 +66,43 @@ export async function disableInviteCode(
   }
 }
 
-/**
- * Verifica que el código exista y esté habilitado.
- */
-export async function checkInviteCode(code: string): Promise<IInviteCodes> {
-  const doc = await InviteCodes.findOne({ codigo: code.toUpperCase() });
+public async getEmpresaIdByInviteCode(code: string): Promise<string> {
+  const codigo = code.trim().toUpperCase();
 
-  if (!doc) throw new InviteCodeNotFoundError();
-  if (!doc.estado) throw new InviteCodeDisabledError();
+  try {
+    // 1️⃣ Busca un registro activo (estado: true)
+    const activeDoc = await InviteCodes.findOne({ codigo, estado: true });
+    if (activeDoc) return activeDoc.empresa.toString();
 
-  return doc;
+    // 3️⃣ No existe en absoluto
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    throw err;
+  }
 }
-export { InviteCodeDuplicateError };
 
+
+public async checkInviteCode(
+  code: string
+): Promise<IInviteCodes> {
+  const codigo = code.trim().toUpperCase();
+
+  try {
+    // 1️⃣ Busca un registro activo (estado: true)
+    const doc = await InviteCodes.findOne({ codigo, estado: true });
+    if (doc) return doc;                // ✔ válido y activo
+
+    // 2️⃣ Existe pero está deshabilitado
+    const exists = await InviteCodes.exists({ codigo });
+    if (exists) throw new InviteCodeDisabledError();
+
+    // 3️⃣ No existe en absoluto
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    throw err;                          // Propaga al controlador/errorHandler
+  }
+}
+
+}
+
+export const inviteCodeService = new InviteCodeService();
