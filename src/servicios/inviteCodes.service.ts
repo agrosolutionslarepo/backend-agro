@@ -4,6 +4,7 @@ import {
   InviteCodeDisabledError,
   InviteCodeDuplicateError,
   InviteCodeNotFoundError,
+  InviteCodeExistError,
 } from '../errors/inviteCodesError';
 
 /**
@@ -22,7 +23,7 @@ export async function createInviteCode(
   
     // 1️⃣ La empresa ya tiene *algún* código activo → prohibido
     const anyActiveSameCompany = await InviteCodes.exists({ empresa, estado: true });
-    if (anyActiveSameCompany) throw new InviteCodeDuplicateError();
+    if (anyActiveSameCompany) throw new InviteCodeExistError();
   
     // 2️⃣ La empresa tiene el MISMO código deshabilitado → prohibido (no reusar)
     const sameCompanyDisabled = await InviteCodes.exists({ codigo, empresa, estado: false });
@@ -39,15 +40,28 @@ export async function createInviteCode(
 /**
  * Deshabilita un código (no importa a qué empresa pertenece).
  */
-export async function disableInviteCode(empresaId: any, code: string): Promise<IInviteCodes> {
-  const doc = await InviteCodes.findOneAndUpdate(
-    { codigo: code.toUpperCase(), empresaId },
-    { estado: false },
-    { new: true, runValidators: true }
-  );
+export async function disableInviteCode(
+  empresaId: string | Types.ObjectId,
+  code: string
+): Promise<IInviteCodes> {
+  const empresa = new Types.ObjectId(empresaId);
+  const codigo  = code.trim().toUpperCase();
 
-  if (!doc) throw new InviteCodeNotFoundError();
-  return doc;
+  try {
+    // 1️⃣ Busca y actualiza sólo si coincide empresa + código
+    const doc = await InviteCodes.findOneAndUpdate(
+      { codigo, empresa },          // filtro estricto
+      { estado: false },            // set
+      { new: true, runValidators: true }
+    );
+
+    if (doc) return doc;
+    // 3️⃣ El código directamente no existe
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    // Propaga al controlador/middleware para manejo centralizado
+    throw err;
+  }
 }
 
 /**

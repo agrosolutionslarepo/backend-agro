@@ -18,3 +18,12 @@ export class InviteCodeNotFoundError extends Error {
       this.name = 'InviteCodeDuplicateError';
     }
   }
+
+  export class InviteCodeExistError extends Error {
+    constructor() {
+      super('Invite code already exists for this company');
+      this.name = 'InviteCodeDuplicateError';
+    }
+  }
+
+  
