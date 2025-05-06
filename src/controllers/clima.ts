@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { climaService } from '../servicios/clima.service';
 import { LatLongRequiredError } from '../errors/climaError';
 
-export async function currentWeather(req: Request, res: Response, next: NextFunction) {
+class ClimaController {
+
+public async currentWeather(req: Request, res: Response, next: NextFunction) {
   try {
     const { lat, lon } = req.query;
     if (!lat || !lon) throw new LatLongRequiredError();
@@ -14,7 +16,7 @@ export async function currentWeather(req: Request, res: Response, next: NextFunc
   } catch (e) { next(e); }
 }
 
-export async function minutalPrecip(req: Request, res: Response, next: NextFunction) {
+public async minutalPrecip(req: Request, res: Response, next: NextFunction) {
   try {
     const { lat, lon } = req.query;
     if (!lat || !lon) if (!lat || !lon) throw new LatLongRequiredError();
@@ -24,7 +26,7 @@ export async function minutalPrecip(req: Request, res: Response, next: NextFunct
   } catch (e) { next(e); }
 }
 
-export async function powerHistoric(req: Request, res: Response, next: NextFunction) {
+public async powerHistoric(req: Request, res: Response, next: NextFunction) {
   try {
     const { lat, lon, start, end } = req.query;
     if (!lat || !lon || !start || !end) throw new LatLongRequiredError();
@@ -35,3 +37,6 @@ export async function powerHistoric(req: Request, res: Response, next: NextFunct
     res.json(hist);
   } catch (e) { next(e); }
 }
+}
+
+export default new ClimaController();
