@@ -1,12 +1,3 @@
-// src/services/climateIntegrations.ts
-// ---------------------------------------------------------------
-// Conjunto de helpers TypeScript listos para que tu app agro obtenga
-// – Observaciones oficiales SMN
-// – Pronóstico agro + ET₀ y GDD (Open‑Meteo Agro)
-// – Precipitación hiperlocal Tomorrow.io
-// – Históricos NASA POWER (diarios)
-// Se asume node‑fetch v2 (ya usado en tu backend) y dotenv configurado.
-// ---------------------------------------------------------------
 import { haversine } from '../helpers/kmConversion';
 import fetch from 'node-fetch';
 
