@@ -9,6 +9,7 @@ import usuarioRoutes from './routes/usuario';
 import loginRoutes   from './routes/login';
 import authRoutes    from './routes/auth';
 import inviteCodesRoutes    from './routes/inviteCodes';
+import climaRoutes from './routes/clima';
 const tokenValidator = require ('./middleware/tokenValidator');
 const errorHandler = require ('./middleware/errorHandler');
 import { startPriceJob } from './jobs/fetch-precios.job';
@@ -31,6 +32,7 @@ app.use('/login',    loginRoutes);
 app.use('/auth',     authRoutes);
 app.use('/grain',tokenValidator ,priceRoutes);
 app.use('/inviteCodes', tokenValidator, inviteCodesRoutes);
+app.use('/clima/', tokenValidator, climaRoutes);
 
 app.get('/ping', (_req, res) => {
   console.log('someone pinged here!!');
