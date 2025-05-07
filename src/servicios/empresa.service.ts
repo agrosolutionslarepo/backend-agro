@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import Empresa, { IEmpresa } from '../models/empresa';
 import Usuario from '../models/usuario';
 
@@ -55,7 +56,7 @@ class EmpresaService {
     }
   }
 
-  public async getEmpresaById(id: string) {
+  public async getEmpresaById(id: string | Types.ObjectId) {
     const empresa = await Empresa.findById(id);
     return empresa;
   }
@@ -66,5 +67,7 @@ class EmpresaService {
   }
   
 }
+
+
 
 export const empresaService = new EmpresaService();
