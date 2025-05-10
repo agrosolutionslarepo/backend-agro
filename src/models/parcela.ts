@@ -2,25 +2,18 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IEmpresa } from './empresa';
 
 export interface IParcela extends Document {
-  nombreParcela: string;
-  tipoCultivo: string;
-  tamaño: number;
-  ubicacion: string;
-  fechaCultivo: Date;
+  nombreParcela: String;
+  tamaño: Number;
+  ubicacion: String;
   estado: boolean;
-  gdd: number;
-  latitud: number;
-  longitud: number;
+  gdd: Number;
+  latitud: Number;
+  longitud: Number;
   empresa: IEmpresa['_id'];
 }
 
 const ParcelaSchema = new Schema<IParcela>({
   nombreParcela: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  tipoCultivo: {
     type: String,
     required: true,
     trim: true,
@@ -34,10 +27,6 @@ const ParcelaSchema = new Schema<IParcela>({
     type: String,
     required: true,
     trim: true,
-  },
-  fechaCultivo: {
-    type: Date,
-    required: true,
   },
   estado: {
     type: Boolean,

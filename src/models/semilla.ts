@@ -2,19 +2,38 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IEmpresa } from './empresa';
 
 export interface ISemilla extends Document {
-  nombreSemilla: String,
-  tipoSemilla: String,
-  cantidadSemilla: Number,
+  nombreSemilla: String;
+  tipoSemilla: 'maíz' | 'trigo' | 'soja';
+  cantidadSemilla: number;
+  unidad: 'kg' | 'ton';
   empresa: IEmpresa['_id'];
 }
 
-const SemillaSchema = new Schema({
-  nombreSemilla: String,
-  tipoSemilla: String,
-  cantidadSemilla: Number,
+const SemillaSchema = new Schema<ISemilla>({
+  nombreSemilla: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  tipoSemilla: {
+    type: String,
+    required: true,
+    enum: ['maíz', 'trigo', 'soja'],
+  },
+  cantidadSemilla: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  unidad: {
+    type: String,
+    enum: ['kg', 'ton'],
+    required: true,
+  },
   empresa: {
     type: Schema.Types.ObjectId,
-    ref: 'Empresa', // Nombre del modelo de empresa
+    ref: 'Empresa',
+    required: true,
   },
 });
 

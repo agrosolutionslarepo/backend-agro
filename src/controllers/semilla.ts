@@ -1,96 +1,51 @@
-import { Request, Response } from 'express';
-import Semilla, { ISemilla } from '../models/semilla';
+import { Request, Response, NextFunction } from 'express';
+import { semillaService } from '../servicios/semilla.service';
 
 class SemillaController {
-  // Obtener todas las semillas
-  public async getAllSemillas(_req: Request, res: Response): Promise<void> {
+  public async getAllSemillas(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const semillas: ISemilla[] = await Semilla.find();
+      const idEmpresa = req.user?.idEmpresa;
+      const semillas = await semillaService.getAllSemillas(idEmpresa);
       res.json(semillas);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener las semillas' });
+      next(error);
     }
   }
 
-  // Obtener una semilla por su ID
-  public async getSemillaById(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
+  public async getSemillaById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const semilla: ISemilla | null = await Semilla.findOne({ idSemilla: id });
-
-      if (semilla) {
-        res.json(semilla);
-      } else {
-        res.status(404).json({ error: 'Semilla no encontrada' });
-      }
+      const idEmpresa = req.user?.idEmpresa;
+      const id = req.params.id;
+      const semilla = await semillaService.getSemillaById(id, idEmpresa);
+      res.json(semilla);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener la semilla' });
+      next(error);
     }
   }
 
-  // Crear una nueva semilla
-  public async createSemilla(req: Request, res: Response): Promise<Response> {
-    const nuevaSemilla: ISemilla = req.body;
-
-    // Validar los datos de entrada
-    if (
-      !nuevaSemilla ||
-      typeof nuevaSemilla.nombreSemilla !== 'string' ||
-      typeof nuevaSemilla.tipoSemilla !== 'string' ||
-      typeof nuevaSemilla.cantidadSemilla !== 'number'
-    ) {
-      return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
-    }
-
+  public async agregarSemilla(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const semillaCreada: ISemilla = await Semilla.create(nuevaSemilla);
-      return res.status(201).json(semillaCreada);
+      const idEmpresa = req.user?.idEmpresa;
+      const { tipoSemilla, cantidad, unidad } = req.body;
+
+      const semilla = await semillaService.agregarSemilla(tipoSemilla, cantidad, unidad, idEmpresa);
+      res.status(200).json(semilla);
     } catch (error) {
-      return res.status(500).json({ error: 'Error al crear la semilla' });
+      next(error);
     }
   }
 
-  // Actualizar una semilla por su ID
-  public async updateSemilla(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: ISemilla = req.body;
-
+  public async updateSemilla(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const semillaActualizada: ISemilla | null = await Semilla.findOneAndUpdate(
-        { idSemilla: id },
-        datosActualizados,
-        { new: true }
-      );
-
-      if (semillaActualizada) {
-        res.json(semillaActualizada);
-      } else {
-        res.status(404).json({ error: 'Semilla no encontrada' });
-      }
+      const id = req.params.id;
+      const idEmpresa = req.user?.idEmpresa;
+      const actualizada = await semillaService.updateSemilla(id, req.body, idEmpresa);
+      res.json(actualizada);
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la semilla' });
+      next(error);
     }
   }
 
-  // Eliminar una semilla por su ID
-  public async deleteSemilla(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
-    try {
-      const semillaEliminada: ISemilla | null = await Semilla.findOneAndDelete({
-        idSemilla: id,
-      });
-
-      if (semillaEliminada) {
-        res.json({ message: 'Semilla eliminada correctamente' });
-      } else {
-        res.status(404).json({ error: 'Semilla no encontrada' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la semilla' });
-    }
-  }
 }
 
 export default new SemillaController();
