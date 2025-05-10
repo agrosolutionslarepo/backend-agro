@@ -25,6 +25,15 @@ const ERROR_HANDLERS = {
   InviteCodeDisabledError: (res: Response, err: Error) =>
     res.status(403).json({ error: err.message }),
 
+  InviteCodeDuplicateError: (res: Response, err: Error) =>
+    res.status(403).json({ error: err.message }),
+
+  InviteCodeExistError: (res: Response, err: Error) =>
+    res.status(403).json({ error: err.message }),
+
+  LatLongRequiredError: (res: Response, err: Error) =>
+    res.status(422).json({ error: err.message }),
+
   defaultError: (res: Response, error: Error) => {
     console.error("Unhandled error:", error.name, error.message); // Log para depuración
     res.status(500).json({ error: 'internal server error' });
@@ -37,3 +46,4 @@ module.exports = (error: Error, _req: Request, res: Response, _next: NextFunctio
 
   handler(res, error);
 };
+

@@ -1,7 +1,7 @@
 // src/jobs/fetch-precios.job.ts
 import cron from 'node-cron';
-import { fetchQuote } from '../servicios/fmp.service';
-import { savePrice }  from '../servicios/precios.service';
+import { fmpService } from '../servicios/fmp.service';
+import { preciosService }  from '../servicios/precios.service';
 
 /**
  * Lanza un fetch inmediato y luego programa la ejecución
@@ -22,8 +22,8 @@ export function startPriceJob(symbols: string[]) {
 async function runOnce(symbols: string[]) {
   for (const sym of symbols) {
     try {
-      const quote = await fetchQuote(sym);  // llama a FMP
-      await savePrice(quote);               // persiste en Mongo
+      const quote = await fmpService.fetchQuote(sym);  // llama a FMP
+      await preciosService.savePrice(quote);               // persiste en Mongo
       console.log(`[JOB] ${sym} ${quote.price}`);
     } catch (err) {
       console.error(`[JOB] error ${sym}:`, err);

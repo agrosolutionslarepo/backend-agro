@@ -5,8 +5,8 @@ const router = express.Router();
 
 
 router.post('/createInviteCode', InviteCodesController.createInviteCodes);
-router.put('/deleteInviteCode', InviteCodesController.disableInviteCodes);
-router.put('/checkInviteCode', InviteCodesController.checkInviteCodes);
+router.delete('/deleteInviteCode', InviteCodesController.disableInviteCodes);
+router.post('/checkInviteCode', InviteCodesController.checkInviteCodes);
 
 
 export default router;

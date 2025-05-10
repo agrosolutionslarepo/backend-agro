@@ -2,6 +2,7 @@ import Usuario, { IUsuario } from '../models/usuario';
 import { IEmpresa } from '../models/empresa';
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { empresaService } from '../servicios/empresa.service';
+import { inviteCodeService } from '../servicios/inviteCodes.service';
 const bcrypt = require('bcrypt');
 
 class UsuarioService {
@@ -15,7 +16,9 @@ class UsuarioService {
 
     if (codigoInvitacion) {
         // Si hay código de invitación, busca la empresa asociada
-        empresa = await empresaService.getEmpresaByCodigo(codigoInvitacion);
+        let inviteDoc = await inviteCodeService.checkInviteCode(codigoInvitacion);
+        const idEmpresaStr = inviteDoc.empresa.toString();
+        empresa = await empresaService.getEmpresaById(idEmpresaStr);
         if (!empresa) {
             throw new UsuarioExistenteError("Código de invitación inválido o empresa no encontrada");
         }

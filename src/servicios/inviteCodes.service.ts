@@ -4,6 +4,7 @@ import {
   InviteCodeDisabledError,
   InviteCodeDuplicateError,
   InviteCodeNotFoundError,
+  InviteCodeExistError,
 } from '../errors/inviteCodesError';
 
 /**
@@ -13,7 +14,9 @@ import {
  *   • Dentro de **la misma empresa** el par (codigo, empresa) debe ser único
  *     sin importar si el registro previo está habilitado o no.
  */
-export async function createInviteCode(
+class InviteCodeService {
+
+public async createInviteCode(
     empresaId: string | Types.ObjectId,
     code: string
   ): Promise<IInviteCodes> {
@@ -22,7 +25,7 @@ export async function createInviteCode(
   
     // 1️⃣ La empresa ya tiene *algún* código activo → prohibido
     const anyActiveSameCompany = await InviteCodes.exists({ empresa, estado: true });
-    if (anyActiveSameCompany) throw new InviteCodeDuplicateError();
+    if (anyActiveSameCompany) throw new InviteCodeExistError();
   
     // 2️⃣ La empresa tiene el MISMO código deshabilitado → prohibido (no reusar)
     const sameCompanyDisabled = await InviteCodes.exists({ codigo, empresa, estado: false });
@@ -39,27 +42,67 @@ export async function createInviteCode(
 /**
  * Deshabilita un código (no importa a qué empresa pertenece).
  */
-export async function disableInviteCode(empresaId: any, code: string): Promise<IInviteCodes> {
-  const doc = await InviteCodes.findOneAndUpdate(
-    { codigo: code.toUpperCase(), empresaId },
-    { estado: false },
-    { new: true, runValidators: true }
-  );
+public async disableInviteCode(
+  empresaId: string | Types.ObjectId,
+  code: string
+): Promise<IInviteCodes> {
+  const empresa = new Types.ObjectId(empresaId);
+  const codigo  = code.trim().toUpperCase();
 
-  if (!doc) throw new InviteCodeNotFoundError();
-  return doc;
+  try {
+    // 1️⃣ Busca y actualiza sólo si coincide empresa + código
+    const doc = await InviteCodes.findOneAndUpdate(
+      { codigo, empresa },          // filtro estricto
+      { estado: false },            // set
+      { new: true, runValidators: true }
+    );
+
+    if (doc) return doc;
+    // 3️⃣ El código directamente no existe
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    // Propaga al controlador/middleware para manejo centralizado
+    throw err;
+  }
 }
 
-/**
- * Verifica que el código exista y esté habilitado.
- */
-export async function checkInviteCode(code: string): Promise<IInviteCodes> {
-  const doc = await InviteCodes.findOne({ codigo: code.toUpperCase() });
+public async getEmpresaIdByInviteCode(code: string): Promise<string> {
+  const codigo = code.trim().toUpperCase();
 
-  if (!doc) throw new InviteCodeNotFoundError();
-  if (!doc.estado) throw new InviteCodeDisabledError();
+  try {
+    // 1️⃣ Busca un registro activo (estado: true)
+    const activeDoc = await InviteCodes.findOne({ codigo, estado: true });
+    if (activeDoc) return activeDoc.empresa.toString();
 
-  return doc;
+    // 3️⃣ No existe en absoluto
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    throw err;
+  }
 }
-export { InviteCodeDuplicateError };
 
+
+public async checkInviteCode(
+  code: string
+): Promise<IInviteCodes> {
+  const codigo = code.trim().toUpperCase();
+
+  try {
+    // 1️⃣ Busca un registro activo (estado: true)
+    const doc = await InviteCodes.findOne({ codigo, estado: true });
+    if (doc) return doc;                // ✔ válido y activo
+
+    // 2️⃣ Existe pero está deshabilitado
+    const exists = await InviteCodes.exists({ codigo });
+    if (exists) throw new InviteCodeDisabledError();
+
+    // 3️⃣ No existe en absoluto
+    throw new InviteCodeNotFoundError();
+  } catch (err) {
+    throw err;                          // Propaga al controlador/errorHandler
+  }
+}
+
+}
+
+export const inviteCodeService = new InviteCodeService();
