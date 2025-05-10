@@ -23,18 +23,6 @@ class SemillaController {
     }
   }
 
-  public async agregarSemilla(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const idEmpresa = req.user?.idEmpresa;
-      const { tipoSemilla, cantidad, unidad } = req.body;
-
-      const semilla = await semillaService.agregarSemilla(tipoSemilla, cantidad, unidad, idEmpresa);
-      res.status(200).json(semilla);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   public async updateSemilla(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id;

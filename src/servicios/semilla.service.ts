@@ -9,19 +9,6 @@ class SemillaService {
     return Semilla.findOne({ _id: id, empresa: idEmpresa });
   }
 
-  public async agregarSemilla(tipoSemilla: 'maíz' | 'trigo' | 'soja', cantidad: number, unidad: 'kg' | 'ton', idEmpresa: string): Promise<ISemilla> {
-    const existente = await Semilla.findOne({ tipoSemilla, empresa: idEmpresa });
-
-    if (!existente) {
-      throw new Error(`La semilla de tipo ${tipoSemilla} no existe para esta empresa`);
-    }
-
-    existente.cantidadSemilla += cantidad;
-    existente.unidad = unidad; // opcionalmente podés validar que no cambie si ya existe
-
-    return existente.save();
-  }
-
   public async updateSemilla(id: string, data: Partial<ISemilla>, idEmpresa: string): Promise<ISemilla | null> {
     const semilla = await Semilla.findOneAndUpdate(
       { _id: id, empresa: idEmpresa },
