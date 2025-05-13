@@ -7,6 +7,7 @@ export interface ICultivo extends Document {
   fechaSiembra: Date;
   fechaCosecha?: Date;
   cantidadSemilla: Number;
+  estado: boolean;
   unidad: 'kg' | 'ton';
   semilla: ISemilla['_id'];
   parcela: IParcela['_id'];
@@ -26,6 +27,10 @@ const CultivoSchema = new Schema<ICultivo>({
     type: Number,
     required: true,
     min: 0
+  },
+  estado: {
+    type: Boolean,
+    required: true,
   },
   unidad: {
     type: String,
