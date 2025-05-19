@@ -37,17 +37,21 @@ class CultivoService {
   }
 
   public async updateCultivo(id: string, data: Partial<ICultivo>, idEmpresa: string): Promise<ICultivo | null> {
-    const cultivo = await Cultivo.findOneAndUpdate(
-      { _id: id, empresa: idEmpresa },
-      data,
-      { new: true }
-    );
-
-    if (!cultivo) {
+    const cultivoActual = await Cultivo.findOne({ _id: id, empresa: idEmpresa });
+  
+    if (!cultivoActual) {
       throw new Error('Cultivo no encontrado o no pertenece a la empresa');
     }
-
-    return cultivo;
+  
+    // Si no se manda semilla o parcela, mantener las actuales
+    const updateData = {
+      ...data,
+      semilla: data.semilla ?? cultivoActual.semilla,
+      parcela: data.parcela ?? cultivoActual.parcela,
+    };
+  
+    const actualizado = await Cultivo.findByIdAndUpdate(id, updateData, { new: true });
+    return actualizado;
   }
 
   public async deleteCultivo(id: string, idEmpresa: string): Promise<ICultivo | null> {
