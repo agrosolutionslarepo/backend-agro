@@ -2,6 +2,7 @@ import Usuario, { IUsuario } from '../models/usuario';
 import { IEmpresa } from '../models/empresa';
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { empresaService } from '../servicios/empresa.service';
+import { semillaService } from '../servicios/semilla.service';
 import { inviteCodeService } from '../servicios/inviteCodes.service';
 const bcrypt = require('bcrypt');
 
@@ -28,6 +29,9 @@ class UsuarioService {
         // Si está creando una empresa nueva, asignar fecha de creación y registrar la empresa
         empresaData.fechaCreacion = new Date();
         empresa = await empresaService.createEmpresa(empresaData);
+        
+        // Crear semillas base con stock 0
+        await semillaService.crearSemillasBase(empresa._id);
         
         // El primer usuario que crea la empresa es administrador
         nuevousuario.administrador = true;

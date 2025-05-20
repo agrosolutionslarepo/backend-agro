@@ -1,9 +1,11 @@
 import express from 'express';
 import CosechaController from '../controllers/cosecha';
+const tokenValidator = require('../middleware/tokenValidator');
 
 const router = express.Router();
 
-// Rutas para la entidad Cosecha
+router.use(tokenValidator);
+
 router.get('/getAllCosechas', CosechaController.getAllCosechas);
 router.get('/getCosechaById/:id', CosechaController.getCosechaById);
 router.post('/createCosecha', CosechaController.createCosecha);

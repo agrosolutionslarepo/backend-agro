@@ -1,97 +1,73 @@
-import { Request, Response } from 'express';
-import Parcela, { IParcela } from '../models/parcela';
-import Empresa, { IEmpresa } from '../models/empresa';
+import { Request, Response, NextFunction } from 'express';
+import { parcelaService } from '../servicios/parcela.service';
 
 class ParcelaController {
-  // Obtener todas las parcelas
-  public async getAllParcelas(_req: Request, res: Response): Promise<void> {
+  public async getAllParcelas(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const parcelas: IParcela[] = await Parcela.find();
+      const parcelas = await parcelaService.getAllParcelas(req.user.idEmpresa);
       res.json(parcelas);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener las parcelas' });
+      next(error);
     }
   }
 
-  // Obtener una parcela por su ID
-  public async getParcelaById(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
+  public async getParcelaById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const parcela: IParcela | null = await Parcela.findOne({ idParcela: id });
-
-      if (parcela) {
-        res.json(parcela);
-      } else {
-        res.status(404).json({ error: 'Parcela no encontrada' });
-      }
+      const parcela = await parcelaService.getParcelaById(req.params.id, req.user.idEmpresa);
+      res.json(parcela);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener la parcela' });
+      next(error);
     }
   }
 
-  // Crear una nueva parcela
-  public async createParcela(req: Request, res: Response): Promise<Response> {
-    const nuevaParcela: IParcela = req.body;
-    const idEmpresa: string = req.params.idEmpresa; // ID de la empresa a la que se asociará la parcela
-
+  public async createParcela(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // Verificar si la empresa existe
-      const empresa: IEmpresa | null = await Empresa.findById(idEmpresa);
-
-      if (!empresa) {
-        return res.status(404).json({ error: 'Empresa no encontrada' });
+      const empresaId = req.user?.idEmpresa;
+  
+      if (!empresaId) {
+        res.status(401).json({ error: 'ID de empresa no encontrado en el token' });
+        return;
       }
-
-      // Asignar la empresa a la parcela
-      nuevaParcela.empresa = empresa._id;
-
-      // Crear la parcela con la referencia a la empresa
-      const parcelaCreada: IParcela = await Parcela.create(nuevaParcela);
-      return res.status(201).json(parcelaCreada);
+  
+      const parcela = await parcelaService.createParcela(req.body, empresaId);
+      res.status(201).json(parcela);
     } catch (error) {
-      return res.status(500).json({ error: 'Error al crear la parcela' });
+      next(error);
     }
   }
 
-  // Actualizar una parcela por su ID
-  public async updateParcela(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: IParcela = req.body;
-
+  public async updateParcela(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const parcelaActualizada: IParcela | null = await Parcela.findOneAndUpdate(
-        { idParcela: id },
-        datosActualizados,
-        { new: true }
-      );
-
-      if (parcelaActualizada) {
-        res.json(parcelaActualizada);
-      } else {
-        res.status(404).json({ error: 'Parcela no encontrada' });
-      }
+      const actualizada = await parcelaService.updateParcela(req.params.id, req.body, req.user.idEmpresa);
+      res.json(actualizada);
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la parcela' });
+      next(error);
     }
   }
 
-  // Eliminar una parcela por su ID
-  public async deleteParcela(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
+  public async deleteParcela(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const parcelaEliminada: IParcela | null = await Parcela.findOneAndDelete({
-        idParcela: id,
-      }); // test commit 
-
-      if (parcelaEliminada) {
-        res.json({ message: 'Parcela eliminada correctamente' });
-      } else {
-        res.status(404).json({ error: 'Parcela no encontrada' });
+      const idEmpresa = req.user?.idEmpresa;
+      const parcelaId = req.params.id;
+  
+      if (!idEmpresa) {
+        res.status(400).json({ message: 'ID de empresa no encontrado en el token' });
+        return;
       }
+  
+      const parcelaEliminada = await parcelaService.deleteParcela(parcelaId, idEmpresa);
+  
+      if (!parcelaEliminada) {
+        res.status(404).json({ message: 'Parcela no encontrada' });
+        return;
+      }
+  
+      res.status(200).json({
+        message: 'Parcela eliminada correctamente',
+        parcela: parcelaEliminada,
+      });
     } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la parcela' });
+      next(error);
     }
   }
 }
