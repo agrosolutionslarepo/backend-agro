@@ -1,96 +1,49 @@
-import { Request, Response } from 'express';
-import Cosecha, { ICosecha } from '../models/cosecha';
+import { Request, Response, NextFunction } from 'express';
+import { cosechaService } from '../servicios/cosecha.service';
 
 class CosechaController {
-  // Obtener todas las cosechas
-  public async getAllCosechas(_req: Request, res: Response): Promise<void> {
+  public async getAllCosechas(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cosechas: ICosecha[] = await Cosecha.find();
+      const cosechas = await cosechaService.getAllCosechas(req.user.idEmpresa);
       res.json(cosechas);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener las cosechas' });
+      next(error);
     }
   }
 
-  // Obtener una cosecha por su ID
-  public async getCosechaById(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
+  public async getCosechaById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cosecha: ICosecha | null = await Cosecha.findOne({ idCosecha: id });
-
-      if (cosecha) {
-        res.json(cosecha);
-      } else {
-        res.status(404).json({ error: 'Cosecha no encontrada' });
-      }
+      const cosecha = await cosechaService.getCosechaById(req.params.id, req.user.idEmpresa);
+      res.json(cosecha);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener la cosecha' });
+      next(error);
     }
   }
 
-  // Crear una nueva cosecha
-  public async createCosecha(req: Request, res: Response): Promise<Response> {
-    const nuevaCosecha: ICosecha = req.body;
-
-    // Validar los datos de entrada
-    if (
-      !nuevaCosecha ||
-      typeof nuevaCosecha.nombreCosecha !== 'string' ||
-      typeof nuevaCosecha.tipoCultivo !== 'string' ||
-      typeof nuevaCosecha.cantidadCosechado !== 'number' ||
-      !(nuevaCosecha.fechaDeCosecha instanceof Date) ||
-      typeof nuevaCosecha.estado !== 'boolean'
-    ) {
-      return res.status(400).json({ error: 'Los datos de entrada son inválidos' });
-    }
-
+  public async createCosecha(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cosechaCreada: ICosecha = await Cosecha.create(nuevaCosecha);
-      return res.status(201).json(cosechaCreada);
+      const cosecha = await cosechaService.createCosecha(req.body, req.user.idEmpresa);
+      res.status(201).json(cosecha);
     } catch (error) {
-      return res.status(500).json({ error: 'Error al crear la cosecha' });
+      next(error);
     }
   }
 
-  // Actualizar una cosecha por su ID
-  public async updateCosecha(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-    const datosActualizados: ICosecha = req.body;
-
+  public async updateCosecha(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cosechaActualizada: ICosecha | null = await Cosecha.findOneAndUpdate(
-        { idCosecha: id },
-        datosActualizados,
-        { new: true }
-      );
-
-      if (cosechaActualizada) {
-        res.json(cosechaActualizada);
-      } else {
-        res.status(404).json({ error: 'Cosecha no encontrada' });
-      }
+      const updated = await cosechaService.updateCosecha(req.params.id, req.body, req.user.idEmpresa);
+      res.json(updated);
     } catch (error) {
-      res.status(500).json({ error: 'Error al actualizar la cosecha' });
+      next(error);
     }
   }
 
-  // Eliminar una cosecha por su ID
-  public async deleteCosecha(req: Request, res: Response): Promise<void> {
-    const id: number = parseInt(req.params.id, 10);
-
+  public async deleteCosecha(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cosechaEliminada: ICosecha | null = await Cosecha.findOneAndDelete({
-        idCosecha: id,
-      });
-
-      if (cosechaEliminada) {
-        res.json({ message: 'Cosecha eliminada correctamente' });
-      } else {
-        res.status(404).json({ error: 'Cosecha no encontrada' });
-      }
+      const eliminado = await cosechaService.deleteCosecha(req.params.id, req.user.idEmpresa);
+      res.status(200).json({ message: 'Cosecha eliminada', cosecha: eliminado });
     } catch (error) {
-      res.status(500).json({ error: 'Error al eliminar la cosecha' });
+      next(error);
     }
   }
 }

@@ -12,6 +12,7 @@ import inviteCodesRoutes    from './routes/inviteCodes';
 import semillaRoutes    from './routes/semilla';
 import parcelaRoutes    from './routes/parcela';
 import cultivoRoutes    from './routes/cultivo';
+import cosechaRoutes    from './routes/cosecha';
 import climaRoutes from './routes/clima';
 const tokenValidator = require ('./middleware/tokenValidator');
 const errorHandler = require ('./middleware/errorHandler');
@@ -38,6 +39,7 @@ app.use('/inviteCodes', tokenValidator, inviteCodesRoutes);
 app.use('/semillas', semillaRoutes);
 app.use('/parcelas', parcelaRoutes);
 app.use('/cultivos', cultivoRoutes);
+app.use('/cosechas', cosechaRoutes);
 app.use('/clima/', tokenValidator, climaRoutes);
 
 app.get('/ping', (_req, res) => {
