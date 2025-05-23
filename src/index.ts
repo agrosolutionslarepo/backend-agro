@@ -1,6 +1,7 @@
 // index.ts
 import express from 'express';
 import dotenv  from 'dotenv';                // 🟢 siempre primero
+import cors from 'cors';
 dotenv.config();                             // 🟢
 
 import priceRoutes   from './routes/precios';
@@ -21,6 +22,7 @@ import { startPriceJob } from './jobs/fetch-precios.job';
 const initDB = require('../config/db')        
 
 const app = express();
+app.use(cors()); // ✅ CORS habilitado
 
 // • Middlewares globales
 app.use(express.json());
