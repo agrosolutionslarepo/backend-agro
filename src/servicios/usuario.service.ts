@@ -150,16 +150,11 @@ class UsuarioService {
         throw new Error('Error desconocido al obtener usuarios de la empresa');
     }
   }
-
-
-  /* public getUsuarioByEmail = async (email: string): Promise<IUsuario | null> => {
-    try {
-      const usuario = await Usuario.findOne({ email });
-      return usuario; 
-    } catch (error) {
-      throw new Error('Error al obtener el objeto usuario');
-    }
-  }; */ 
+  
+  public async getUsuarioById(id: string) {
+    return Usuario.findById(id).select('nombre apellido nombreUsuario email administrador empresa fechaNacimiento');
+  }
+  
 }
 
 export const usuarioService = new UsuarioService();

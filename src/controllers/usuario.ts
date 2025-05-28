@@ -105,6 +105,20 @@ class UsuarioController {
     }
   }
 
+  public async getUsuarioAutenticado(req: Request, res: Response, next: NextFunction) {
+    try {
+      const idUsuario = req.user?.id;
+      if (!idUsuario) return res.status(401).json({ error: 'Token inválido o no presente' });
+  
+      const usuario = await usuarioService.getUsuarioById(idUsuario);
+      if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+  
+      res.json(usuario);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 
 }
 
