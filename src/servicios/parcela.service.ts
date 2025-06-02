@@ -3,7 +3,7 @@ import Parcela, { IParcela } from '../models/parcela';
 class ParcelaService {
 
   public async getAllParcelas(idEmpresa: string): Promise<IParcela[]> {
-    return Parcela.find({ empresa: idEmpresa });
+    return Parcela.find({ empresa: idEmpresa, estado: true });
   }
 
   public async getParcelaById(id: string, idEmpresa: string): Promise<IParcela | null> {
