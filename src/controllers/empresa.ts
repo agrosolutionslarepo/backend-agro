@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { empresaService } from '../servicios/empresa.service';
 
 class EmpresaController {
+
   public async updateEmpresa(req: Request, res: Response): Promise<Response> {
     const idEmpresa = req.user?.idEmpresa;
 
@@ -14,6 +15,21 @@ class EmpresaController {
       return res.status(200).json(empresaActualizada);
     } catch (error: any) {
       return res.status(400).json({ error: error.message });
+    }
+  }
+
+  public async getNombreEmpresa(req: Request, res: Response): Promise<Response> {
+    const idEmpresa = req.user?.idEmpresa;
+
+    if (!idEmpresa) {
+      return res.status(400).json({ error: 'ID de empresa no encontrado en el token' });
+    }
+
+    try {
+      const nombre = await empresaService.getNombreEmpresa(idEmpresa);
+      return res.status(200).json({ nombreEmpresa: nombre });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message || 'Error al obtener el nombre de la empresa' });
     }
   }
 

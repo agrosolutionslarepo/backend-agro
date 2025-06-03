@@ -34,6 +34,16 @@ class EmpresaService {
       throw new Error(error.message || 'Error al actualizar la empresa');
     }
   }
+
+  public async getNombreEmpresa(id: String): Promise<String> {
+    const empresa = await Empresa.findById(id);
+
+    if (!empresa) {
+      throw new Error('Empresa no encontrada');
+    }
+
+    return empresa.nombreEmpresa;
+  }
     
   public async deleteEmpresa(id: String): Promise<IEmpresa | null> { //funciona
     try {
