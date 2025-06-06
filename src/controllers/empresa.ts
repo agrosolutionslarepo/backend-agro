@@ -55,6 +55,28 @@ class EmpresaController {
       next(error);
     }
   }
+
+  public async crearEmpresaDesdeGoogle(req: Request, res: Response): Promise<Response> {
+    const idEmpresaActual = req.user?.idEmpresa;
+    const idEmpresaFicticia = '6840da01ba52fec6d68de6bc';
+
+    if (!idEmpresaActual || idEmpresaActual !== idEmpresaFicticia) {
+      return res.status(403).json({ error: 'No autorizado para crear empresa desde esta ruta' });
+    }
+
+    const { nombreEmpresa } = req.body;
+    if (!nombreEmpresa || typeof nombreEmpresa !== 'string') {
+      return res.status(400).json({ error: 'nombreEmpresa es requerido y debe ser string' });
+    }
+
+    try {
+      const nuevaEmpresa = await empresaService.crearEmpresaDesdeGoogle(nombreEmpresa, req.user.id);
+      return res.status(201).json({ empresa: nuevaEmpresa });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message || 'Error al crear empresa desde Google' });
+    }
+  }
+  
 }
 
 export default new EmpresaController();

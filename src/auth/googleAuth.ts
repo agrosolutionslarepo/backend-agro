@@ -1,12 +1,13 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import Usuario from '../models/usuario';
-import Empresa from '../models/empresa';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { IUserToken } from '../custrequest';
 
 dotenv.config();
+
+const EMPRESA_FIJA_ID = '6840da01ba52fec6d68de6bc'; // 👈 Empresa fija
 
 passport.use(
   new GoogleStrategy(
@@ -25,16 +26,8 @@ passport.use(
 
         let usuario = await Usuario.findOne({ email });
 
-        // ✅ Si no existe el usuario, lo creamos junto con una empresa ficticia
+        // ✅ Si no existe el usuario, lo creamos asignándole la empresa fija
         if (!usuario) {
-          const nombreRandom = `Empresa_${Math.floor(Math.random() * 10000)}`;
-
-          const empresaCreada = await Empresa.create({
-            nombreEmpresa: nombreRandom,
-            fechaCreacion: new Date(),
-            estado: true,
-          });
-
           usuario = await Usuario.create({
             nombre: profile.name?.givenName,
             apellido: profile.name?.familyName,
@@ -43,8 +36,8 @@ passport.use(
             estado: true,
             administrador: true,
             nombreUsuario: profile.displayName,
-            empresa: empresaCreada._id,
-            authType: 'google', // ✅ clave para que no exija campos locales
+            empresa: EMPRESA_FIJA_ID, // 👈 Se asigna la empresa fija
+            authType: 'google',
           });
         }
 

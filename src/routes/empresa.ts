@@ -7,7 +7,6 @@ const router = express.Router();
 router.put('/updateEmpresa', EmpresaController.updateEmpresa);
 router.put('/deleteEmpresa', EmpresaController.deleteEmpresa);
 router.get('/getNombreEmpresa', EmpresaController.getNombreEmpresa);
-
-
+router.post('/crearEmpresaDesdeGoogle', EmpresaController.crearEmpresaDesdeGoogle);
 
 export default router;

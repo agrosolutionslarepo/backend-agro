@@ -75,6 +75,25 @@ class EmpresaService {
     const empresa = await Empresa.findOne({ codigoInvitacion });
     return empresa;
   }
+
+  public async crearEmpresaDesdeGoogle(nombreEmpresa: string, userId: string): Promise<IEmpresa> {
+    const yaExiste = await Empresa.exists({ nombreEmpresa });
+    if (yaExiste) {
+      throw new Error('El nombre de empresa ya está en uso');
+    }
+
+    // Crear la empresa real
+    const nuevaEmpresa = await Empresa.create({
+      nombreEmpresa,
+      estado: true,
+      fechaCreacion: new Date(),
+    });
+
+    // Actualizar al usuario para que apunte a esta empresa nueva
+    await Usuario.findByIdAndUpdate(userId, { empresa: nuevaEmpresa._id });
+
+    return nuevaEmpresa;
+    }
   
 }
 
