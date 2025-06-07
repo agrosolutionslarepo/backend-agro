@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 import Empresa, { IEmpresa } from '../models/empresa';
 import Usuario from '../models/usuario';
+import { semillaService } from './semilla.service';
 
 class EmpresaService {
 
@@ -81,19 +82,25 @@ class EmpresaService {
     if (yaExiste) {
       throw new Error('El nombre de empresa ya está en uso');
     }
-
+  
     // Crear la empresa real
     const nuevaEmpresa = await Empresa.create({
       nombreEmpresa,
       estado: true,
       fechaCreacion: new Date(),
     });
-
-    // Actualizar al usuario para que apunte a esta empresa nueva
-    await Usuario.findByIdAndUpdate(userId, { empresa: nuevaEmpresa._id });
-
+  
+    // Actualizar al usuario: asignar empresa y dejarlo como administrador
+    await Usuario.findByIdAndUpdate(userId, {
+      empresa: nuevaEmpresa._id,
+      administrador: true,
+    });
+  
+    // Crear semillas base asociadas a esta empresa
+    await semillaService.crearSemillasBase(nuevaEmpresa._id.toString());
+  
     return nuevaEmpresa;
-    }
+  }
   
 }
 
