@@ -169,6 +169,28 @@ class UsuarioService {
   public async getUsuarioById(id: string) {
     return Usuario.findById(id).select('nombre apellido nombreUsuario email administrador empresa fechaNacimiento');
   }
+
+  public async deleteUsuarioDeMiEmpresa(idAdmin: string, idUsuario: string): Promise<IUsuario> {
+    const admin = await Usuario.findById(idAdmin);
+    if (!admin || !admin.administrador) {
+      throw new Error('No autorizado: solo administradores pueden realizar esta acción');
+    }
+  
+    const usuario = await Usuario.findById(idUsuario);
+    if (!usuario) {
+      throw new Error('Usuario a reasignar no encontrado');
+    }
+  
+    if (usuario.empresa.toString() !== admin.empresa.toString()) {
+      throw new Error('El usuario no pertenece a tu empresa');
+    }
+  
+    const empresaFicticiaId = '6840da01ba52fec6d68de6bc';
+    usuario.empresa = empresaFicticiaId as any;
+    await usuario.save();
+  
+    return usuario;
+  }
   
 }
 

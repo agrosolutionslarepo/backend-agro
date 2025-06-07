@@ -119,6 +119,22 @@ class UsuarioController {
     }
   }
 
+  public async deleteUsuarioDeMiEmpresa(req: Request, res: Response, next: NextFunction) {
+    try {
+      const idAdmin = req.user?.id;
+      const idUsuarioReasignar = req.params.id;
+  
+      if (!idAdmin) {
+        return res.status(401).json({ error: 'No autenticado' });
+      }
+  
+      const resultado = await usuarioService.deleteUsuarioDeMiEmpresa(idAdmin, idUsuarioReasignar);
+  
+      return res.status(200).json({ message: 'Usuario reasignado correctamente', usuario: resultado });
+    } catch (error) {
+      next(error);
+    }
+  }
 
 }
 
