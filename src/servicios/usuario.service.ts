@@ -1,5 +1,6 @@
 import Usuario, { IUsuario } from '../models/usuario';
 import { IEmpresa } from '../models/empresa';
+import Empresa from '../models/empresa';
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { empresaService } from '../servicios/empresa.service';
 import { semillaService } from '../servicios/semilla.service';
@@ -46,22 +47,36 @@ class UsuarioService {
     return await Usuario.create(nuevousuario);
   }
 
-  public async deleteUsuario(id: string): Promise<IUsuario | null> { // funciona
+  public async deleteUsuario(id: string): Promise<IUsuario | null> {
     try {
       const usuario = await Usuario.findById(id);
-      console.log(usuario)
       if (!usuario) {
-          throw new Error('Usuario no encontrado');
+        throw new Error('Usuario no encontrado');
       }
-
-      // Actualizar el estado del usuario a 'false' (inactivo)
+  
+      // Si el usuario es administrador, desactivar empresa y reasignar otros usuarios
+      if (usuario.administrador && usuario.empresa) {
+        const empresaId = usuario.empresa;
+        const empresaFicticiaId = '6840da01ba52fec6d68de6bc';
+  
+        // 🔒 Desactivar la empresa actual
+        await Empresa.findByIdAndUpdate(empresaId, { estado: false });
+  
+        // 🔄 Reasignar todos los usuarios activos de esa empresa (excepto el admin)
+        await Usuario.updateMany(
+          { empresa: empresaId, _id: { $ne: usuario._id }, estado: true },
+          { empresa: empresaFicticiaId }
+        );
+      }
+  
+      // 🔒 Desactivar al usuario (sea admin o no)
       usuario.estado = false;
       await usuario.save();
-
+  
       return usuario;
-    } catch (error: unknown) { 
+    } catch (error: unknown) {
       if (error instanceof Error) {
-          throw new Error(error.message || 'Error al eliminar usuario');
+        throw new Error(error.message || 'Error al eliminar usuario');
       }
       throw new Error('Error desconocido al eliminar usuario');
     }
