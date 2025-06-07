@@ -12,6 +12,6 @@ router.put('/deleteUsuario', UsuarioController.deleteUsuario);
 router.put('/updateUsuario', UsuarioController.updateUsuario);
 router.get('/getUsuariosMismaEmpresa', UsuarioController.getUsuariosMismaEmpresa);
 router.get('/getUsuarioAutenticado', UsuarioController.getUsuarioAutenticado);
-router.put('/deleteUsuarioDeMiEmpresa', UsuarioController.deleteUsuarioDeMiEmpresa);
+router.put('/deleteUsuarioDeMiEmpresa/:id', UsuarioController.deleteUsuarioDeMiEmpresa);
 
 export default router;
