@@ -5,7 +5,8 @@ import Usuario from '../models/usuario';
 import Notification from '../models/notification';
 
 export interface Lot {
-  _id: Types.ObjectId;
+  _id: Types.ObjectId; // id del cultivo
+  parcelaId: Types.ObjectId;
   nombre: string;
   cultivo: 'maiz' | 'soja' | 'trigo';
   lat: number;
@@ -18,7 +19,7 @@ export interface Lot {
 }
 
 export async function updateLotGdd(lotId: Types.ObjectId, gdd: number, gddDate: Date): Promise<void> {
-  await Parcela.findByIdAndUpdate(lotId, { gdd, gddDate });
+  await Cultivo.findByIdAndUpdate(lotId, { gdd, gddDate });
 }
 
 export async function getActiveLots(): Promise<Lot[]> {
@@ -39,14 +40,15 @@ export async function getActiveLots(): Promise<Lot[]> {
     const tipo = (semilla.tipoSemilla as string).replace('í', 'i') as 'maiz' | 'soja' | 'trigo';
 
     lots.push({
-      _id: parcela._id,
+      _id: c._id,
+      parcelaId: parcela._id,
       nombre: parcela.nombreParcela,
       cultivo: tipo,
       lat: parcela.latitud,
       lon: parcela.longitud,
       fechaSiembra: c.fechaSiembra,
-      gddAcum: parcela.gdd || 0,
-      gddDate: parcela.gddDate,
+      gddAcum: c.gdd || 0,
+      gddDate: c.gddDate,
       userId: admin._id,
       lastNotifs: [],
     });
