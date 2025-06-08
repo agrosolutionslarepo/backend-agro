@@ -170,6 +170,18 @@ class UsuarioService {
     return Usuario.findById(id).select('nombre apellido nombreUsuario email administrador empresa fechaNacimiento');
   }
 
+  public async setExpoToken(id: string, token: string) {
+    const usuario = await Usuario.findByIdAndUpdate(
+      id,
+      { expoToken: token },
+      { new: true }
+    );
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+    return usuario;
+  }
+
   public async deleteUsuarioDeMiEmpresa(idAdmin: string, idUsuario: string): Promise<IUsuario> {
     const admin = await Usuario.findById(idAdmin);
     if (!admin || !admin.administrador) {

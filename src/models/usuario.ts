@@ -12,6 +12,7 @@ export interface IUsuario extends Document {
   empresa: Schema.Types.ObjectId;
   googleId?: String; // <- agregalo si usás login con Google
   authType?: string; // <- opcional para distinguir tipo de autenticación
+  expoToken?: String;
 }
 
 const UsuarioSchema = new Schema<IUsuario>({
@@ -55,6 +56,9 @@ const UsuarioSchema = new Schema<IUsuario>({
   empresa: {
     type: Schema.Types.ObjectId,
     ref: 'Empresa',
+  },
+  expoToken: {
+    type: String,
   },
   googleId: {
     type: String,

@@ -18,7 +18,7 @@ import climaRoutes from './routes/clima';
 const tokenValidator = require ('./middleware/tokenValidator');
 const errorHandler = require ('./middleware/errorHandler');
 import { startPriceJob } from './jobs/fetch-precios.job';
-
+import { startAgroNotifyJob } from './jobs/agroNotifications.job';
 const initDB = require('../config/db')        
 
 const app = express();
@@ -60,6 +60,7 @@ app.use(errorHandler);
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       startPriceJob(symbols); // 🟢 symbols ya existen
+      startAgroNotifyJob();
     });
   } catch (err) {
     console.error('Failed to start app:', err);

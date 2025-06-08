@@ -12,6 +12,8 @@ export interface ICultivo extends Document {
   semilla: ISemilla['_id'];
   parcela: IParcela['_id'];
   empresa: IEmpresa['_id'];
+  gdd?: number;
+  gddDate?: Date;
 }
 
 const CultivoSchema = new Schema<ICultivo>({
@@ -51,6 +53,14 @@ const CultivoSchema = new Schema<ICultivo>({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Empresa',
     required: true
+  },
+  gdd: {
+    type: Number,
+    required: false
+  },
+  gddDate: {
+    type: Date,
+    required: false
   }
 });
 
