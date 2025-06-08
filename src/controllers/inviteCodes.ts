@@ -4,7 +4,12 @@ import {
   InviteCodeDuplicateError,
 } from '../errors/inviteCodesError';
 import { randomString } from '../helpers/randomString';
+import jwt from 'jsonwebtoken';
+import { IUserToken } from '../custrequest';
+import Usuario from '../models/usuario';
+
 const MAX_ATTEMPTS = 5; // reintentos ante colisión
+
 class InviteCodesController {
 
   public async createInviteCodes(req: Request, res: Response, next: NextFunction) {
@@ -74,15 +79,37 @@ class InviteCodesController {
     try {
       const userId = req.user?.id;
       const codigo = req.body.codigo;
-
+  
       if (!userId || !codigo) {
         return res.status(400).json({ error: 'Faltan datos: id de usuario o código' });
       }
-
+  
       const empresaId = await inviteCodeService.getEmpresaIdByInviteCode(codigo);
       await inviteCodeService.attachUserToCompany(userId, empresaId);
-
-      return res.status(200).json({ message: 'Usuario vinculado correctamente a la empresa' });
+  
+      // 🔄 Obtener el usuario actualizado
+      const updatedUser = await Usuario.findById(userId);
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Usuario no encontrado después de actualizar empresa' });
+      }
+  
+      // 🔐 Generar nuevo token
+      const tokenPayload: IUserToken = {
+        id: updatedUser._id.toString(),
+        nombre: updatedUser.nombre.toString(),
+        apellido: updatedUser.apellido.toString(),
+        administrador: Boolean(updatedUser.administrador),
+        nombreUsuario: updatedUser.nombreUsuario.toString(),
+        email: updatedUser.email.toString(),
+        idEmpresa: updatedUser.empresa.toString(),
+      };
+  
+      const nuevoToken = jwt.sign(tokenPayload, process.env.SECRET as string);
+  
+      return res.status(200).json({
+        message: 'Usuario vinculado correctamente a la empresa',
+        jwt: nuevoToken, // ⬅️ devolvés el nuevo token al frontend
+      });
     } catch (e) {
       next(e);
     }

@@ -2,6 +2,8 @@ import { Types } from 'mongoose';
 import Empresa, { IEmpresa } from '../models/empresa';
 import Usuario from '../models/usuario';
 import { semillaService } from './semilla.service';
+import jwt from 'jsonwebtoken';
+import { IUserToken } from '../custrequest'; // Asegurate de tener esta interfaz
 
 class EmpresaService {
 
@@ -77,7 +79,7 @@ class EmpresaService {
     return empresa;
   }
 
-  public async crearEmpresaDesdeGoogle(nombreEmpresa: string, userId: string): Promise<IEmpresa> {
+  public async crearEmpresaDesdeGoogle(nombreEmpresa: string, userId: string): Promise<{ empresa: IEmpresa; jwt: string }> {
     const yaExiste = await Empresa.exists({ nombreEmpresa });
     if (yaExiste) {
       throw new Error('El nombre de empresa ya está en uso');
@@ -91,15 +93,38 @@ class EmpresaService {
     });
   
     // Actualizar al usuario: asignar empresa y dejarlo como administrador
-    await Usuario.findByIdAndUpdate(userId, {
-      empresa: nuevaEmpresa._id,
-      administrador: true,
-    });
+    const updatedUser = await Usuario.findByIdAndUpdate(
+      userId,
+      {
+        empresa: nuevaEmpresa._id,
+        administrador: true,
+      },
+      { new: true } // <- necesario para obtener el documento actualizado
+    );
   
-    // Crear semillas base asociadas a esta empresa
+    if (!updatedUser) {
+      throw new Error('Usuario no encontrado al actualizar');
+    }
+  
+    // Crear semillas base
     await semillaService.crearSemillasBase(nuevaEmpresa._id.toString());
   
-    return nuevaEmpresa;
+    const tokenPayload: IUserToken = {
+      id: updatedUser._id.toString(),
+      nombre: updatedUser.nombre.toString(),
+      apellido: updatedUser.apellido.toString(),
+      administrador: Boolean(updatedUser.administrador),
+      nombreUsuario: updatedUser.nombreUsuario.toString(),
+      email: updatedUser.email.toString(),
+      idEmpresa: nuevaEmpresa._id.toString(),
+    };
+  
+    const token = jwt.sign(tokenPayload, process.env.SECRET as string);
+  
+    return {
+      empresa: nuevaEmpresa,
+      jwt: token,
+    };
   }
   
 }
