@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------------
 import cron from 'node-cron';
 import { climaService } from '../servicios/clima.service';
-import { getActiveLots, saveNotification, Lot } from '../servicios/farm.service';
+import { getActiveLots, saveNotification, updateLotGdd, Lot } from '../servicios/farm.service';
 import { pushToUser } from '../servicios/push.service';
 //import { Types } from 'mongoose';
 
@@ -76,7 +76,6 @@ const gddRule: Rule = (c) => {
   return null;
 };
 
-const rules: Rule[] = [rainHeavyRule, driftRule, gddRule];
 
 //--------------------------------------------------
 // Job runner (schedule hourly)
@@ -99,11 +98,20 @@ async function processLot(lote: Lot) {
   const cur = await climaService.getSmnCurrent(lote.lat, lote.lon);
   const minute = await climaService.getTomorrowMinute(lote.lat, lote.lon);
   const rain24 = minute.data.timelines[0].intervals.slice(0, 24 * 60).reduce((a: number, i: any) => a + i.values.precipitationIntensity / 60, 0);
-  const et0 = (await climaService.getOpenMeteoAgro(lote.lat, lote.lon, 1)).daily.et0_fao_evapotranspiration[0];
+  const meteo = await climaService.getOpenMeteoAgro(lote.lat, lote.lon, 1);
+  const et0 = meteo.daily.et0_fao_evapotranspiration[0];
 
-  // 2. Actualiza GDD
-  const gddHour = Math.max(0, cur.temp - 10) / 24;
-  lote.gddAcum += gddHour;
+  // 2. Actualiza GDD una vez al día
+  const today = new Date().toISOString().slice(0, 10);
+  const last = lote.gddDate ? lote.gddDate.toISOString().slice(0, 10) : null;
+  let updatedToday = false;
+  if (last !== today) {
+    const gddDay = meteo.daily.gdd_base10[0];
+    lote.gddAcum += gddDay;
+    lote.gddDate = new Date();
+    await updateLotGdd(lote._id, lote.gddAcum, lote.gddDate);
+    updatedToday = true;
+  }
 
   const ctx: RuleCtx = {
     lote,
@@ -115,8 +123,17 @@ async function processLot(lote: Lot) {
     et0Hoy: et0,
   };
 
-  for (const rule of rules) {
+  for (const rule of [rainHeavyRule, driftRule]) {
     const res = rule(ctx);
+    if (res && !lote.lastNotifs.includes(res.id)) {
+      await pushToUser(lote.userId, res.message);
+      await saveNotification(lote._id, res.id, res.message);
+      lote.lastNotifs.push(res.id);
+    }
+  }
+
+  if (updatedToday) {
+    const res = gddRule(ctx);
     if (res && !lote.lastNotifs.includes(res.id)) {
       await pushToUser(lote.userId, res.message);
       await saveNotification(lote._id, res.id, res.message);

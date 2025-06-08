@@ -12,12 +12,13 @@ export interface Lot {
   lon: number;
   fechaSiembra: Date;
   gddAcum: number;
+  gddDate?: Date;
   userId: Types.ObjectId;
   lastNotifs: string[];
 }
 
-export async function updateLotGdd(lotId: Types.ObjectId, gdd: number): Promise<void> {
-  await Parcela.findByIdAndUpdate(lotId, { gdd });
+export async function updateLotGdd(lotId: Types.ObjectId, gdd: number, gddDate: Date): Promise<void> {
+  await Parcela.findByIdAndUpdate(lotId, { gdd, gddDate });
 }
 
 export async function getActiveLots(): Promise<Lot[]> {
@@ -45,6 +46,7 @@ export async function getActiveLots(): Promise<Lot[]> {
       lon: parcela.longitud,
       fechaSiembra: c.fechaSiembra,
       gddAcum: parcela.gdd || 0,
+      gddDate: parcela.gddDate,
       userId: admin._id,
       lastNotifs: [],
     });
