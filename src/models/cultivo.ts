@@ -12,7 +12,7 @@ export interface ICultivo extends Document {
   semilla: ISemilla['_id'];
   parcela: IParcela['_id'];
   empresa: IEmpresa['_id'];
-  gdd?: Number;
+  gdd?: number;
   gddDate?: Date;
 }
 
