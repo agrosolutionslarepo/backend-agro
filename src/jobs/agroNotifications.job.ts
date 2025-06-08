@@ -127,7 +127,7 @@ async function processLot(lote: Lot) {
     const res = rule(ctx);
     if (res && !lote.lastNotifs.includes(res.id)) {
       await pushToUser(lote.userId, res.message);
-      await saveNotification(lote._id, res.id, res.message);
+      await saveNotification(lote.parcelaId, res.id, res.message);
       lote.lastNotifs.push(res.id);
     }
   }
@@ -136,7 +136,7 @@ async function processLot(lote: Lot) {
     const res = gddRule(ctx);
     if (res && !lote.lastNotifs.includes(res.id)) {
       await pushToUser(lote.userId, res.message);
-      await saveNotification(lote._id, res.id, res.message);
+      await saveNotification(lote.parcelaId, res.id, res.message);
       lote.lastNotifs.push(res.id);
     }
   }
