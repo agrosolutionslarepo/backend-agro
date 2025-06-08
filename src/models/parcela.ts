@@ -7,6 +7,7 @@ export interface IParcela extends Document {
   ubicacion: String;
   estado: boolean;
   gdd: Number;
+  gddDate?: Date;
   latitud: Number;
   longitud: Number;
   empresa: IEmpresa['_id'];
@@ -34,6 +35,10 @@ const ParcelaSchema = new Schema<IParcela>({
   },
   gdd: {
     type: Number,
+    required: false,
+  },
+  gddDate: {
+    type: Date,
     required: false,
   },
   latitud: {
