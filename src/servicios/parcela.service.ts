@@ -1,4 +1,5 @@
 import Parcela, { IParcela } from '../models/parcela';
+import { sanitize } from '../helpers/sanitize';
 
 class ParcelaService {
 
@@ -11,8 +12,9 @@ class ParcelaService {
   }
 
   public async createParcela(data: Partial<IParcela>, idEmpresa: string): Promise<IParcela> {
+    const clean = sanitize({ ...data }) as Partial<IParcela>;
     const nuevaParcela = new Parcela({
-      ...data,
+      ...clean,
       estado: true,
       empresa: idEmpresa,
     });
@@ -21,9 +23,10 @@ class ParcelaService {
   }
 
   public async updateParcela(id: string, data: Partial<IParcela>, idEmpresa: string): Promise<IParcela | null> {
+    const clean = sanitize({ ...data }) as Partial<IParcela>;
     const actualizada = await Parcela.findOneAndUpdate(
       { _id: id, empresa: idEmpresa },
-      data,
+      clean,
       { new: true }
     );
 

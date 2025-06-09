@@ -5,12 +5,16 @@ import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { empresaService } from '../servicios/empresa.service';
 import { semillaService } from '../servicios/semilla.service';
 import { inviteCodeService } from '../servicios/inviteCodes.service';
+import { sanitize } from '../helpers/sanitize';
 const bcrypt = require('bcrypt');
 
 class UsuarioService {
 
   public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> {
-    if (await Usuario.exists({ email: nuevousuario.email })) {
+    const cleanUser = sanitize({ ...nuevousuario }) as IUsuario;
+    const cleanEmpresa = empresaData ? sanitize({ ...empresaData }) as IEmpresa : undefined;
+
+    if (await Usuario.exists({ email: cleanUser.email })) {
         throw new UsuarioExistenteError();
     }
 
@@ -28,8 +32,9 @@ class UsuarioService {
         nuevousuario.administrador = false;
     } else if (empresaData) {
         // Si está creando una empresa nueva, asignar fecha de creación y registrar la empresa
-        empresaData.fechaCreacion = new Date();
-        empresa = await empresaService.createEmpresa(empresaData);
+        if (!cleanEmpresa) throw new UsuarioExistenteError("Faltan datos para empresa");
+        cleanEmpresa.fechaCreacion = new Date();
+        empresa = await empresaService.createEmpresa(cleanEmpresa);
         
         // Crear semillas base con stock 0
         await semillaService.crearSemillasBase(empresa._id);
@@ -41,10 +46,10 @@ class UsuarioService {
     }
 
     // Hashear la contraseña antes de guardar
-    nuevousuario.contraseña = await bcrypt.hash(nuevousuario.contraseña, 8);
-    nuevousuario.empresa = empresa._id;
+    cleanUser.contraseña = await bcrypt.hash(cleanUser.contraseña, 8);
+    cleanUser.empresa = empresa._id;
 
-    return await Usuario.create(nuevousuario);
+    return await Usuario.create(cleanUser);
   }
 
   public async deleteUsuario(id: string): Promise<IUsuario | null> {
@@ -91,11 +96,12 @@ class UsuarioService {
         }
 
         // Verificar qué campos se actualizarán
-        if (datosActualizados.nombre !== undefined) {
-            usuario.nombre = datosActualizados.nombre;
+        const clean = sanitize({ ...datosActualizados }) as Partial<IUsuario>;
+        if (clean.nombre !== undefined) {
+            usuario.nombre = clean.nombre;
         }
-        if (datosActualizados.apellido !== undefined) {
-            usuario.apellido = datosActualizados.apellido;
+        if (clean.apellido !== undefined) {
+            usuario.apellido = clean.apellido;
         }
 
         // Guardar los cambios
@@ -121,8 +127,9 @@ class UsuarioService {
         }
 
         // Verificar qué campos se actualizarán
-        if (datosActualizados.contraseña !== undefined) {
-            usuario.contraseña = await bcrypt.hash(datosActualizados.contraseña, 8);
+        const clean = sanitize({ ...datosActualizados }) as Partial<IUsuario>;
+        if (clean.contraseña !== undefined) {
+            usuario.contraseña = await bcrypt.hash(clean.contraseña, 8);
             console.log(usuario.contraseña);
         }  else{
           
@@ -171,9 +178,10 @@ class UsuarioService {
   }
 
   public async setExpoToken(id: string, token: string) {
+    const cleanToken = sanitize(token) as string;
     const usuario = await Usuario.findByIdAndUpdate(
       id,
-      { expoToken: token },
+      { expoToken: cleanToken },
       { new: true }
     );
     if (!usuario) {
@@ -183,12 +191,12 @@ class UsuarioService {
   }
 
   public async deleteUsuarioDeMiEmpresa(idAdmin: string, idUsuario: string): Promise<IUsuario> {
-    const admin = await Usuario.findById(idAdmin);
+    const admin = await Usuario.findById(sanitize(idAdmin));
     if (!admin || !admin.administrador) {
       throw new Error('No autorizado: solo administradores pueden realizar esta acción');
     }
-  
-    const usuario = await Usuario.findById(idUsuario);
+
+    const usuario = await Usuario.findById(sanitize(idUsuario));
     if (!usuario) {
       throw new Error('Usuario a reasignar no encontrado');
     }

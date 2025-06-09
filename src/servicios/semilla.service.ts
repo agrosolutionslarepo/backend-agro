@@ -1,4 +1,5 @@
 import Semilla, { ISemilla } from '../models/semilla';
+import { sanitize } from '../helpers/sanitize';
 
 class SemillaService {
   public async getAllSemillas(idEmpresa: string): Promise<ISemilla[]> {
@@ -10,9 +11,10 @@ class SemillaService {
   }
 
   public async updateSemilla(id: string, data: Partial<ISemilla>, idEmpresa: string): Promise<ISemilla | null> {
+    const clean = sanitize({ ...data }) as Partial<ISemilla>;
     const semilla = await Semilla.findOneAndUpdate(
       { _id: id, empresa: idEmpresa },
-      data,
+      clean,
       { new: true }
     );
 

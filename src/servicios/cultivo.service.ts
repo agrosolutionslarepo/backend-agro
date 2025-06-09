@@ -1,6 +1,7 @@
 import Cultivo, { ICultivo } from '../models/Cultivo';
 import Semilla from '../models/semilla';
 import Parcela from '../models/parcela';
+import { sanitize } from '../helpers/sanitize';
 
 class CultivoService {
   public async getAllCultivos(idEmpresa: string): Promise<ICultivo[]> {
@@ -12,7 +13,8 @@ class CultivoService {
   }
 
   public async createCultivo(data: Partial<ICultivo>, idEmpresa: string): Promise<ICultivo> {
-    const { semilla, parcela, cantidadSemilla, unidad, fechaSiembra, fechaCosecha } = data;
+    const clean = sanitize({ ...data }) as Partial<ICultivo>;
+    const { semilla, parcela, cantidadSemilla, unidad, fechaSiembra, fechaCosecha } = clean;
 
     // Validar existencia de semilla y parcela dentro de la empresa
     const semillaExiste = await Semilla.findOne({ _id: semilla, empresa: idEmpresa });
@@ -38,16 +40,17 @@ class CultivoService {
 
   public async updateCultivo(id: string, data: Partial<ICultivo>, idEmpresa: string): Promise<ICultivo | null> {
     const cultivoActual = await Cultivo.findOne({ _id: id, empresa: idEmpresa });
-  
+    
     if (!cultivoActual) {
       throw new Error('Cultivo no encontrado o no pertenece a la empresa');
     }
-  
+
     // Si no se manda semilla o parcela, mantener las actuales
+    const clean = sanitize({ ...data }) as Partial<ICultivo>;
     const updateData = {
-      ...data,
-      semilla: data.semilla ?? cultivoActual.semilla,
-      parcela: data.parcela ?? cultivoActual.parcela,
+      ...clean,
+      semilla: clean.semilla ?? cultivoActual.semilla,
+      parcela: clean.parcela ?? cultivoActual.parcela,
     };
   
     const actualizado = await Cultivo.findByIdAndUpdate(id, updateData, { new: true });
