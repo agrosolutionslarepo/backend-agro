@@ -54,7 +54,8 @@ class UsuarioService {
 
   public async deleteUsuario(id: string): Promise<IUsuario | null> {
     try {
-      const usuario = await Usuario.findById(id);
+      const cleanId = sanitize(id) as string;
+      const usuario = await Usuario.findById(cleanId);
       if (!usuario) {
         throw new Error('Usuario no encontrado');
       }
@@ -89,8 +90,9 @@ class UsuarioService {
 
   public async updateUsuario(id: string, datosActualizados: Partial<IUsuario>): Promise<IUsuario | null> {
     try {
+        const cleanId = sanitize(id) as string;
         // Buscar el usuario por ID
-        const usuario = await Usuario.findById(id);
+        const usuario = await Usuario.findById(cleanId);
         if (!usuario) {
             throw new Error('Usuario no encontrado');
         }
@@ -121,7 +123,8 @@ class UsuarioService {
         if(!check){
           throw new Error('invalid credentials');
         }
-        const usuario = await Usuario.findById(id);
+        const cleanId = sanitize(id) as string;
+        const usuario = await Usuario.findById(cleanId);
         if (!usuario) {
             throw new Error('Usuario no encontrado');
         }
@@ -152,8 +155,9 @@ class UsuarioService {
 
   public async getUsuariosMismaEmpresa(id: String): Promise<{ nombreUsuario: String }[]> { // funciona
     try {
+        const cleanId = sanitize(id as string) as string;
         // Buscar el usuario logueado para obtener su empresa
-        const usuario = await Usuario.findById(id);
+        const usuario = await Usuario.findById(cleanId);
         if (!usuario) {
             throw new Error('Usuario no encontrado');
         }
@@ -174,13 +178,15 @@ class UsuarioService {
   }
   
   public async getUsuarioById(id: string) {
-    return Usuario.findById(id).select('nombre apellido nombreUsuario email administrador empresa fechaNacimiento');
+    const cleanId = sanitize(id) as string;
+    return Usuario.findById(cleanId).select('nombre apellido nombreUsuario email administrador empresa fechaNacimiento');
   }
 
   public async setExpoToken(id: string, token: string) {
     const cleanToken = sanitize(token) as string;
+    const cleanId = sanitize(id) as string;
     const usuario = await Usuario.findByIdAndUpdate(
-      id,
+      cleanId,
       { expoToken: cleanToken },
       { new: true }
     );
