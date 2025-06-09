@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { IEmpresa } from './empresa';
-import { ICultivo } from './Cultivo';
+import { ICultivo } from './cultivo';
 
 export interface ICosecha extends Document {
   fechaCosecha: Date;
