@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import Cultivo from '../models/Cultivo';
+import Cultivo from '../models/cultivo';
 //import Parcela from '../models/parcela';
 import Usuario from '../models/usuario';
 import Notification from '../models/notification';
