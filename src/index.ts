@@ -44,7 +44,7 @@ app.use('/cultivos', cultivoRoutes);
 app.use('/cosechas', cosechaRoutes);
 app.use('/clima/', tokenValidator, climaRoutes);
 
-app.get('/ping', (_req, res) => {
+app.get('/', (_req, res) => {
   console.log('someone pinged here!!');
   res.send('pong');
 });
