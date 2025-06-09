@@ -70,6 +70,23 @@ class InviteCodesController {
     }
   }
 
+  public async joinCompanyWithCode(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      const codigo = req.body.codigo;
+
+      if (!userId || !codigo) {
+        return res.status(400).json({ error: 'Faltan datos: id de usuario o código' });
+      }
+
+      const empresaId = await inviteCodeService.getEmpresaIdByInviteCode(codigo);
+      await inviteCodeService.attachUserToCompany(userId, empresaId);
+
+      return res.status(200).json({ message: 'Usuario vinculado correctamente a la empresa' });
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export default new InviteCodesController();

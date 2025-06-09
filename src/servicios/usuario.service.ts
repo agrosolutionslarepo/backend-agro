@@ -154,7 +154,7 @@ class UsuarioService {
         // Buscar otros usuarios de la misma empresa, excluyendo al usuario logueado
         const usuarios = await Usuario.find(
             { empresa: usuario.empresa, _id: { $ne: usuario._id } },
-            { nombreUsuario: 1, _id: 0 } // Solo traemos el nombreUsuario
+            { nombreUsuario: 1 } // Solo traemos el nombreUsuario 
         );
 
         return usuarios;

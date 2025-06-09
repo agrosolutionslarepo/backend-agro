@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import InviteCodes, { IInviteCodes } from '../models/inviteCodes';
+import Usuario from '../models/usuario';
 import {
   InviteCodeDisabledError,
   InviteCodeDuplicateError,
@@ -17,27 +18,27 @@ import {
 class InviteCodeService {
 
   public async createInviteCode(
-      empresaId: string | Types.ObjectId,
-      code: string
-    ): Promise<IInviteCodes> {
-      const empresa = new Types.ObjectId(empresaId);
-      const codigo = code.trim().toUpperCase();
-    
-      // 1️⃣ La empresa ya tiene *algún* código activo → prohibido
-      const anyActiveSameCompany = await InviteCodes.exists({ empresa, estado: true });
-      if (anyActiveSameCompany) throw new InviteCodeExistError();
-    
-      // 2️⃣ La empresa tiene el MISMO código deshabilitado → prohibido (no reusar)
-      const sameCompanyDisabled = await InviteCodes.exists({ codigo, empresa, estado: false });
-      if (sameCompanyDisabled) throw new InviteCodeDuplicateError();
-    
-      // 3️⃣ Otra empresa posee el MISMO código activo → prohibido
-      const otherActive = await InviteCodes.exists({ codigo, empresa: { $ne: empresa }, estado: true });
-      if (otherActive) throw new InviteCodeDuplicateError();
-    
-      // ✅ Se permite crear (o sólo hay registros deshabilitados en otras empresas)
-      return InviteCodes.create({ codigo, estado: true, empresa });
-    }
+    empresaId: string | Types.ObjectId,
+    code: string
+  ): Promise<IInviteCodes> {
+    const empresa = new Types.ObjectId(empresaId);
+    const codigo = code.trim().toUpperCase();
+
+    // 1️⃣ La empresa ya tiene *algún* código activo → prohibido
+    const anyActiveSameCompany = await InviteCodes.exists({ empresa, estado: true });
+    if (anyActiveSameCompany) throw new InviteCodeExistError();
+
+    // 2️⃣ La empresa tiene el MISMO código deshabilitado → prohibido (no reusar)
+    const sameCompanyDisabled = await InviteCodes.exists({ codigo, empresa, estado: false });
+    if (sameCompanyDisabled) throw new InviteCodeDuplicateError();
+
+    // 3️⃣ Otra empresa posee el MISMO código activo → prohibido
+    const otherActive = await InviteCodes.exists({ codigo, empresa: { $ne: empresa }, estado: true });
+    if (otherActive) throw new InviteCodeDuplicateError();
+
+    // ✅ Se permite crear (o sólo hay registros deshabilitados en otras empresas)
+    return InviteCodes.create({ codigo, estado: true, empresa });
+  }
 
   /**
    * Deshabilita un código (no importa a qué empresa pertenece).
@@ -47,7 +48,7 @@ class InviteCodeService {
     code: string
   ): Promise<IInviteCodes> {
     const empresa = new Types.ObjectId(empresaId);
-    const codigo  = code.trim().toUpperCase();
+    const codigo = code.trim().toUpperCase();
 
     try {
       // 1️⃣ Busca y actualiza sólo si coincide empresa + código
@@ -113,6 +114,24 @@ class InviteCodeService {
     }
 
     return doc;
+  }
+
+  public async attachUserToCompany(
+    userId: string | Types.ObjectId,
+    empresaId: string | Types.ObjectId
+  ): Promise<void> {
+    const userObjectId = new Types.ObjectId(userId);
+    const empresaObjectId = new Types.ObjectId(empresaId);
+
+    const updatedUser = await Usuario.findByIdAndUpdate(
+      userObjectId,
+      { empresa: empresaObjectId },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error('Usuario no encontrado al intentar vincular empresa');
+    }
   }
 
 }
