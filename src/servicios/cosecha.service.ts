@@ -1,5 +1,5 @@
 import Cosecha, { ICosecha } from '../models/cosecha';
-import Cultivo from '../models/Cultivo';
+import Cultivo from '../models/cultivo';
 import { sanitize } from '../helpers/sanitize';
 
 class CosechaService {

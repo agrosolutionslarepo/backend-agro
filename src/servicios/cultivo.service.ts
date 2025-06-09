@@ -1,4 +1,4 @@
-import Cultivo, { ICultivo } from '../models/Cultivo';
+import Cultivo, { ICultivo } from '../models/cultivo';
 import Semilla from '../models/semilla';
 import Parcela from '../models/parcela';
 import { sanitize } from '../helpers/sanitize';
