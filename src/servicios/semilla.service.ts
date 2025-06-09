@@ -1,18 +1,23 @@
 import Semilla, { ISemilla } from '../models/semilla';
+import { sanitize } from '../helpers/sanitize';
 
 class SemillaService {
   public async getAllSemillas(idEmpresa: string): Promise<ISemilla[]> {
-    return Semilla.find({ empresa: idEmpresa });
+    const cleanEmpresa = sanitize(idEmpresa) as string;
+    return Semilla.find({ empresa: cleanEmpresa });
   }
 
   public async getSemillaById(id: string, idEmpresa: string): Promise<ISemilla | null> {
-    return Semilla.findOne({ _id: id, empresa: idEmpresa });
+    const cleanId = sanitize(id) as string;
+    const cleanEmpresa = sanitize(idEmpresa) as string;
+    return Semilla.findOne({ _id: cleanId, empresa: cleanEmpresa });
   }
 
   public async updateSemilla(id: string, data: Partial<ISemilla>, idEmpresa: string): Promise<ISemilla | null> {
+    const clean = sanitize({ ...data }) as Partial<ISemilla>;
     const semilla = await Semilla.findOneAndUpdate(
       { _id: id, empresa: idEmpresa },
-      data,
+      clean,
       { new: true }
     );
 
