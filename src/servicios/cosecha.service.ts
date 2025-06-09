@@ -1,5 +1,6 @@
 import Cosecha, { ICosecha } from '../models/cosecha';
 import Cultivo from '../models/Cultivo';
+import { sanitize } from '../helpers/sanitize';
 
 class CosechaService {
   public async getAllCosechas(idEmpresa: string): Promise<ICosecha[]> {
@@ -11,7 +12,8 @@ class CosechaService {
   }
 
   public async createCosecha(data: Partial<ICosecha>, idEmpresa: string): Promise<ICosecha> {
-    const { cultivo, cantidadCosechada, unidad, observaciones } = data;
+    const clean = sanitize({ ...data }) as Partial<ICosecha>;
+    const { cultivo, cantidadCosechada, unidad, observaciones } = clean;
   
     // Validar que el cultivo pertenece a la empresa
     const cultivoExiste = await Cultivo.findOne({ _id: cultivo, empresa: idEmpresa });
@@ -36,9 +38,10 @@ class CosechaService {
     const actual = await Cosecha.findOne({ _id: id, empresa: idEmpresa });
     if (!actual) throw new Error('Cosecha no encontrada o no pertenece a la empresa');
 
+    const clean = sanitize({ ...data }) as Partial<ICosecha>;
     const updateData = {
-      ...data,
-      cultivo: data.cultivo ?? actual.cultivo,
+      ...clean,
+      cultivo: clean.cultivo ?? actual.cultivo,
     };
 
     return Cosecha.findByIdAndUpdate(id, updateData, { new: true });

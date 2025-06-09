@@ -2,16 +2,18 @@ import { Types } from 'mongoose';
 import Empresa, { IEmpresa } from '../models/empresa';
 import Usuario from '../models/usuario';
 import { semillaService } from './semilla.service';
+import { sanitize } from '../helpers/sanitize';
 
 class EmpresaService {
 
   public async createEmpresa(data: IEmpresa): Promise<IEmpresa> { // funciona
-    if (typeof data.nombreEmpresa !== 'string') {
+    const clean = sanitize({ ...data }) as IEmpresa;
+    if (typeof clean.nombreEmpresa !== 'string') {
       throw new Error('Los datos de entrada son inválidos');
     }
 
     try {
-      const empresaCreada: IEmpresa = await Empresa.create(data);
+      const empresaCreada: IEmpresa = await Empresa.create(clean);
       return empresaCreada;
     } catch (error: any) {
       throw new Error(error.message || 'Error al crear la empresa');
@@ -19,12 +21,13 @@ class EmpresaService {
   }
 
   public async updateEmpresa(id: string, data: Partial<IEmpresa>): Promise<IEmpresa | null> { // funciona
-    if (!data.nombreEmpresa || typeof data.nombreEmpresa !== 'string') {
+    const clean = sanitize({ ...data }) as Partial<IEmpresa>;
+    if (!clean.nombreEmpresa || typeof clean.nombreEmpresa !== 'string') {
       throw new Error('El nombre de la empresa es obligatorio y debe ser un string');
     }
 
     try {
-      const empresaActualizada = await Empresa.findByIdAndUpdate(id, data, { new: true });
+      const empresaActualizada = await Empresa.findByIdAndUpdate(id, clean, { new: true });
 
       if (!empresaActualizada) {
         throw new Error('Empresa no encontrada');
