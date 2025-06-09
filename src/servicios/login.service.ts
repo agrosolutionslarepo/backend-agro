@@ -1,6 +1,7 @@
 import Usuario from '../models/usuario';
 import { InvalidCredentialsError, UsuarioEliminadoError } from '../errors/loginErrors';
 import {  UsuarioGoogleError } from '../errors/usuarioErrors';
+import { sanitize } from '../helpers/sanitize';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -8,8 +9,10 @@ class LoginService {
 
     public async loguear(email: string, contraseña: string) { // funciona
         try {
+            const cleanEmail = sanitize(email);
+            const cleanPass = sanitize(contraseña);
             // Buscar usuario por email
-            const user = await Usuario.findOne({ email });
+            const user = await Usuario.findOne({ email: cleanEmail });
             if (!user) {
                 throw new InvalidCredentialsError();
             }
@@ -22,7 +25,7 @@ class LoginService {
             }
 
             // Comparar contraseñas
-            const passwordCorrect = await bcrypt.compare(contraseña, user.contraseña);
+            const passwordCorrect = await bcrypt.compare(cleanPass, user.contraseña);
             if (!passwordCorrect) {
                 throw new InvalidCredentialsError();
             }
@@ -64,7 +67,8 @@ class LoginService {
                 throw new UsuarioEliminadoError();
             }
 
-            const passwordCorrect = await bcrypt.compare(contraseña, user.contraseña);
+            const cleanPass = sanitize(contraseña);
+            const passwordCorrect = await bcrypt.compare(cleanPass, user.contraseña);
             if (!passwordCorrect) {
                 throw new InvalidCredentialsError();
             }

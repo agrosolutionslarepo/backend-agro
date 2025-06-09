@@ -6,7 +6,6 @@ export interface IParcela extends Document {
   tamaño: Number;
   ubicacion: String;
   estado: boolean;
-  gdd: Number;
   latitud: Number;
   longitud: Number;
   empresa: IEmpresa['_id'];
@@ -31,10 +30,6 @@ const ParcelaSchema = new Schema<IParcela>({
   estado: {
     type: Boolean,
     required: true,
-  },
-  gdd: {
-    type: Number,
-    required: false,
   },
   latitud: {
     type: Number,

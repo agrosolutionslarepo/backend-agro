@@ -4,16 +4,19 @@ import Usuario from '../models/usuario';
 import { semillaService } from './semilla.service';
 import jwt from 'jsonwebtoken';
 import { IUserToken } from '../custrequest'; // Asegurate de tener esta interfaz
+import { sanitize } from '../helpers/sanitize';
+
 
 class EmpresaService {
 
   public async createEmpresa(data: IEmpresa): Promise<IEmpresa> { // funciona
-    if (typeof data.nombreEmpresa !== 'string') {
+    const clean = sanitize({ ...data }) as IEmpresa;
+    if (typeof clean.nombreEmpresa !== 'string') {
       throw new Error('Los datos de entrada son inválidos');
     }
 
     try {
-      const empresaCreada: IEmpresa = await Empresa.create(data);
+      const empresaCreada: IEmpresa = await Empresa.create(clean);
       return empresaCreada;
     } catch (error: any) {
       throw new Error(error.message || 'Error al crear la empresa');
@@ -21,12 +24,14 @@ class EmpresaService {
   }
 
   public async updateEmpresa(id: string, data: Partial<IEmpresa>): Promise<IEmpresa | null> { // funciona
-    if (!data.nombreEmpresa || typeof data.nombreEmpresa !== 'string') {
+    const cleanId = sanitize(id) as string;
+    const clean = sanitize({ ...data }) as Partial<IEmpresa>;
+    if (!clean.nombreEmpresa || typeof clean.nombreEmpresa !== 'string') {
       throw new Error('El nombre de la empresa es obligatorio y debe ser un string');
     }
 
     try {
-      const empresaActualizada = await Empresa.findByIdAndUpdate(id, data, { new: true });
+      const empresaActualizada = await Empresa.findByIdAndUpdate(cleanId, clean, { new: true });
 
       if (!empresaActualizada) {
         throw new Error('Empresa no encontrada');
@@ -39,7 +44,8 @@ class EmpresaService {
   }
 
   public async getNombreEmpresa(id: String): Promise<String> {
-    const empresa = await Empresa.findById(id);
+    const cleanId = sanitize(id) as string;
+    const empresa = await Empresa.findById(cleanId);
 
     if (!empresa) {
       throw new Error('Empresa no encontrada');
@@ -50,9 +56,10 @@ class EmpresaService {
     
   public async deleteEmpresa(id: String): Promise<IEmpresa | null> { //funciona
     try {
+        const cleanId = sanitize(id) as string;
         const empresaEliminada = await Empresa.findByIdAndUpdate(
-            id, 
-            { estado: false }, 
+            cleanId,
+            { estado: false },
             { new: true }
         );
 
@@ -61,7 +68,7 @@ class EmpresaService {
         }
 
         // Desactivar usuarios asociados a la empresa
-        await Usuario.updateMany({ empresa: id }, { estado: false });
+        await Usuario.updateMany({ empresa: cleanId }, { estado: false });
 
         return empresaEliminada;
     } catch (error: any) {
@@ -70,12 +77,14 @@ class EmpresaService {
   }
 
   public async getEmpresaById(id: string | Types.ObjectId) {
-    const empresa = await Empresa.findById(id);
+    const cleanId = sanitize(id as string) as string;
+    const empresa = await Empresa.findById(cleanId);
     return empresa;
   }
 
   public async getEmpresaByCodigo(codigoInvitacion: string) {
-    const empresa = await Empresa.findOne({ codigoInvitacion });
+    const cleanCode = sanitize(codigoInvitacion) as string;
+    const empresa = await Empresa.findOne({ codigoInvitacion: cleanCode });
     return empresa;
   }
 
