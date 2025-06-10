@@ -13,6 +13,9 @@ const ERROR_HANDLERS = {
   UsuarioExistenteError: (res: Response, error: Error) =>
     res.status(409).json({ error: error.message }),
 
+  EmpresaExistenteError: (res: Response, error: Error) =>
+    res.status(409).json({ error: error.message }),
+
   UsuarioEliminadoError: (res: Response, error: Error) =>
     res.status(403).json({ error: error.message }), 
   
