@@ -2,6 +2,7 @@ import Usuario, { IUsuario } from '../models/usuario';
 import { IEmpresa } from '../models/empresa';
 import Empresa from '../models/empresa';
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
+import { EmpresaExistenteError } from "../errors/empresaErrors";
 import { empresaService } from '../servicios/empresa.service';
 import { semillaService } from '../servicios/semilla.service';
 import { inviteCodeService } from '../servicios/inviteCodes.service';
@@ -10,8 +11,8 @@ const bcrypt = require('bcrypt');
 
 class UsuarioService {
 
-  public async registrarse(nuevousuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> {
-    const cleanUser = sanitize({ ...nuevousuario }) as IUsuario;
+  public async registrarse(nuevoUsuario: IUsuario, codigoInvitacion?: string, empresaData?: IEmpresa): Promise<IUsuario> {
+    const cleanUser = sanitize({ ...nuevoUsuario }) as IUsuario;
     const cleanEmpresa = empresaData ? sanitize({ ...empresaData }) as IEmpresa : undefined;
 
     if (await Usuario.exists({ email: cleanUser.email })) {
@@ -29,18 +30,22 @@ class UsuarioService {
             throw new UsuarioExistenteError("Código de invitación inválido o empresa no encontrada");
         }
         // Si el usuario se está uniendo con invitación, no es administrador
-        nuevousuario.administrador = false;
+        cleanUser.administrador = false;
     } else if (empresaData) {
         // Si está creando una empresa nueva, asignar fecha de creación y registrar la empresa
         if (!cleanEmpresa) throw new UsuarioExistenteError("Faltan datos para empresa");
+        const exists = await Empresa.exists({ nombreEmpresa: cleanEmpresa.nombreEmpresa });
+        if (exists) {
+            throw new EmpresaExistenteError();
+        }
         cleanEmpresa.fechaCreacion = new Date();
         empresa = await empresaService.createEmpresa(cleanEmpresa);
         
         // Crear semillas base con stock 0
         await semillaService.crearSemillasBase(empresa._id);
-        
+
         // El primer usuario que crea la empresa es administrador
-        nuevousuario.administrador = true;
+        cleanUser.administrador = true;
     } else {
         throw new UsuarioExistenteError("Faltan datos para empresa");
     }
@@ -48,6 +53,7 @@ class UsuarioService {
     // Hashear la contraseña antes de guardar
     cleanUser.contraseña = await bcrypt.hash(cleanUser.contraseña, 8);
     cleanUser.empresa = empresa._id;
+    cleanUser.estado = true;
 
     return await Usuario.create(cleanUser);
   }

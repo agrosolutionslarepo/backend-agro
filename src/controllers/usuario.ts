@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { usuarioService } from '../servicios/usuario.service';
 import { loginService } from '../servicios/login.service';
+import { EmpresaExistenteError } from '../errors/empresaErrors';
 
 class UsuarioController {
 
@@ -10,7 +11,11 @@ class UsuarioController {
         const usuarioCreado = await usuarioService.registrarse(usuarioData, codigoInvitacion, empresaData);
         res.status(201).json(usuarioCreado);
     } catch (error) {
-        next(error);
+        if (error instanceof EmpresaExistenteError) {
+            res.status(409).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
   };
 
