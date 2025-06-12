@@ -12,7 +12,7 @@ export function startPriceJob(symbols: string[]) {
   runOnce(symbols).catch(console.error);
 
   // 2) Ejecución periódica (hh:00 y hh:30)
-  cron.schedule('*/30 * * * *', () => runOnce(symbols));
+  cron.schedule('0 0 * * *', () => runOnce(symbols));
 }
 
 /**
