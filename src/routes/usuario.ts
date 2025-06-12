@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Rutas para la entidad Usuario
 router.post('/registrarse', UsuarioController.registrarse); // funciona
+router.post('/solicitarReset', UsuarioController.solicitarReset);
+router.post('/confirmarReset', UsuarioController.confirmarReset);
 router.use(tokenValidator);
 router.post('/pushToken', UsuarioController.saveExpoToken);
 router.put('/updatePassword', UsuarioController.updateContraseña);

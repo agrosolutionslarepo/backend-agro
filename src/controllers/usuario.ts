@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { usuarioService } from '../servicios/usuario.service';
 import { loginService } from '../servicios/login.service';
+import { passwordResetService } from '../servicios/passwordReset.service';
 import { EmpresaExistenteError } from '../errors/empresaErrors';
 
 class UsuarioController {
@@ -18,6 +19,26 @@ class UsuarioController {
         }
     }
   };
+
+  public async solicitarReset(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      await passwordResetService.enviarCodigo(email);
+      res.status(200).json({ message: 'Código enviado' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async confirmarReset(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, codigo, contraseña } = req.body;
+      const usuario = await passwordResetService.resetear(email, codigo, contraseña);
+      res.status(200).json({ message: 'Contraseña actualizada', usuario });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   public async deleteUsuario(req: Request, res: Response, next: NextFunction) {
     try {
