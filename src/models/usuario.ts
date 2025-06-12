@@ -13,6 +13,8 @@ export interface IUsuario extends Document {
   googleId?: String; // <- agregalo si usás login con Google
   authType?: string; // <- opcional para distinguir tipo de autenticación
   expoToken?: String;
+  codigoReset?: String;
+  resetExpira?: Date;
 }
 
 const UsuarioSchema = new Schema<IUsuario>({
@@ -59,6 +61,12 @@ const UsuarioSchema = new Schema<IUsuario>({
   },
   expoToken: {
     type: String,
+  },
+  codigoReset: {
+    type: String,
+  },
+  resetExpira: {
+    type: Date,
   },
   googleId: {
     type: String,
