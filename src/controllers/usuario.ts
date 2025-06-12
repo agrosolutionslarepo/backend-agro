@@ -33,8 +33,8 @@ class UsuarioController {
   public async confirmarReset(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, codigo, contraseña } = req.body;
-      const usuario = await passwordResetService.resetear(email, codigo, contraseña);
-      res.status(200).json({ message: 'Contraseña actualizada', usuario });
+      await passwordResetService.resetear(email, codigo, contraseña);
+      res.status(200).json({ message: 'Contraseña actualizada'});
     } catch (error) {
       next(error);
     }
