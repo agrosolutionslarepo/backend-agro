@@ -37,4 +37,15 @@
      next(error); // Pasa el error al middleware de manejo de errores
    }
 -};
-+;
+;
+
+## Variables de entorno para envío de correos
+
+Para que el servicio de recuperación de contraseña pueda enviar emails es necesario definir las siguientes variables en el archivo `.env`:
+
+```
+SMTP_HOST=<servidor smtp>
+SMTP_PORT=<puerto>
+SMTP_USER=<usuario>
+SMTP_PASS=<contraseña>
+```
