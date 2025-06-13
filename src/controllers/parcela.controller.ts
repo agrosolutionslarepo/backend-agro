@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { parcelaService } from '../services/parcela.service';
+import { HttpError } from '../errors/HttpError';
 
 class ParcelaController {
   public async getAllParcelas(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -25,8 +26,7 @@ class ParcelaController {
       const empresaId = req.user?.idEmpresa;
   
       if (!empresaId) {
-        res.status(401).json({ error: 'ID de empresa no encontrado en el token' });
-        return;
+        return next(new HttpError(401, 'ID de empresa no encontrado en el token'));
       }
   
       const parcela = await parcelaService.createParcela(req.body, empresaId);
@@ -51,15 +51,13 @@ class ParcelaController {
       const parcelaId = req.params.id;
   
       if (!idEmpresa) {
-        res.status(400).json({ message: 'ID de empresa no encontrado en el token' });
-        return;
+        return next(new HttpError(400, 'ID de empresa no encontrado en el token'));
       }
   
       const parcelaEliminada = await parcelaService.deleteParcela(parcelaId, idEmpresa);
   
       if (!parcelaEliminada) {
-        res.status(404).json({ message: 'Parcela no encontrada' });
-        return;
+        return next(new HttpError(404, 'Parcela no encontrada'));
       }
   
       res.status(200).json({

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { cultivoService } from '../services/cultivo.service';
+import { HttpError } from '../errors/HttpError';
 
 class CultivoController {
   public async getAllCultivos(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -25,8 +26,7 @@ class CultivoController {
       const empresaId = req.user?.idEmpresa;
 
       if (!empresaId) {
-        res.status(401).json({ error: 'ID de empresa no encontrado en el token' });
-        return;
+        return next(new HttpError(401, 'ID de empresa no encontrado en el token'));
       }
 
       const cultivo = await cultivoService.createCultivo(req.body, empresaId);
@@ -50,8 +50,7 @@ class CultivoController {
       const eliminado = await cultivoService.deleteCultivo(req.params.id, req.user.idEmpresa);
 
       if (!eliminado) {
-        res.status(404).json({ message: 'Cultivo no encontrado' });
-        return;
+        return next(new HttpError(404, 'Cultivo no encontrado'));
       }
 
       res.status(200).json({

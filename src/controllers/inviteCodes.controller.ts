@@ -3,6 +3,7 @@ import { inviteCodeService } from '../services/inviteCodes.service';
 import {
   InviteCodeDuplicateError,
 } from '../errors/inviteCodesError';
+import { HttpError } from '../errors/HttpError';
 import { randomString } from '../helpers/randomString';
 import jwt from 'jsonwebtoken';
 import { IUserToken } from '../custrequest';
@@ -15,7 +16,7 @@ class InviteCodesController {
   public async createInviteCodes(req: Request, res: Response, next: NextFunction) {
     try {
       const idEmpresa = req.user?.idEmpresa;
-      if (!idEmpresa) return res.status(403).json({ error: 'empresaId missing in token' });
+      if (!idEmpresa) return next(new HttpError(403, 'empresaId missing in token'));
       let lastErr: unknown = null;
       for (let attempts = 0; attempts < MAX_ATTEMPTS; attempts++) {
         const code = randomString(6);
@@ -42,7 +43,7 @@ class InviteCodesController {
     try {
       console.log(req.body.code);
       const idEmpresa = req.user?.idEmpresa;
-      if (!idEmpresa) return res.status(403).json({ error: 'empresaId missing in token' });
+      if (!idEmpresa) return next(new HttpError(403, 'empresaId missing in token'));
       inviteCodeService.disableInviteCode(idEmpresa, req.body.code);
       return res.status(200).send('done');
     } catch (e) {
@@ -59,19 +60,19 @@ class InviteCodesController {
     }
   }
 
-  public async getActiveInviteCode(req: Request, res: Response) {
+  public async getActiveInviteCode(req: Request, res: Response, next: NextFunction) {
     try {
       const idEmpresa = req.user?.idEmpresa;
 
       if (!idEmpresa) {
-        return res.status(403).json({ error: 'ID de empresa no encontrado en el token' });
+        return next(new HttpError(403, 'ID de empresa no encontrado en el token'));
       }
 
       const code = await inviteCodeService.getActiveInviteCodeByEmpresaId(idEmpresa);
 
       return res.status(200).json({ codigo: code.codigo });
     } catch (error: any) {
-      return res.status(404).json({ error: error.message });
+      next(error);
     }
   }
 
@@ -81,7 +82,7 @@ class InviteCodesController {
       const codigo = req.body.codigo;
   
       if (!userId || !codigo) {
-        return res.status(400).json({ error: 'Faltan datos: id de usuario o código' });
+        return next(new HttpError(400, 'Faltan datos: id de usuario o código'));
       }
   
       const empresaId = await inviteCodeService.getEmpresaIdByInviteCode(codigo);
@@ -90,7 +91,7 @@ class InviteCodesController {
       // 🔄 Obtener el usuario actualizado
       const updatedUser = await Usuario.findById(userId);
       if (!updatedUser) {
-        return res.status(404).json({ error: 'Usuario no encontrado después de actualizar empresa' });
+        return next(new HttpError(404, 'Usuario no encontrado después de actualizar empresa'));
       }
   
       // 🔐 Generar nuevo token
