@@ -1,5 +1,5 @@
 import express from 'express';
-import CultivoController from '../controllers/cultivo';
+import CultivoController from '../controllers/cultivo.controller';
 const tokenValidator = require('../middleware/tokenValidator');
 
 const router = express.Router();

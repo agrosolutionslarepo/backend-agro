@@ -1,5 +1,5 @@
 import express from 'express';
-import CosechaController from '../controllers/cosecha';
+import CosechaController from '../controllers/cosecha.controller';
 const tokenValidator = require('../middleware/tokenValidator');
 
 const router = express.Router();

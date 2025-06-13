@@ -4,17 +4,17 @@ import dotenv  from 'dotenv';                // 🟢 siempre primero
 import cors from 'cors';
 dotenv.config();                             // 🟢
 
-import priceRoutes   from './routes/precios';
-import empresaRoutes from './routes/empresa';
-import usuarioRoutes from './routes/usuario';
-import loginRoutes   from './routes/login';
-import authRoutes    from './routes/auth';
-import inviteCodesRoutes    from './routes/inviteCodes';
-import semillaRoutes    from './routes/semilla';
-import parcelaRoutes    from './routes/parcela';
-import cultivoRoutes    from './routes/cultivo';
-import cosechaRoutes    from './routes/cosecha';
-import climaRoutes from './routes/clima';
+import priceRoutes   from './routes/precios.routes';
+import empresaRoutes from './routes/empresa.routes';
+import usuarioRoutes from './routes/usuario.routes';
+import loginRoutes   from './routes/login.routes';
+import authRoutes    from './routes/auth.routes';
+import inviteCodesRoutes    from './routes/inviteCodes.routes';
+import semillaRoutes    from './routes/semilla.routes';
+import parcelaRoutes    from './routes/parcela.routes';
+import cultivoRoutes    from './routes/cultivo.routes';
+import cosechaRoutes    from './routes/cosecha.routes';
+import climaRoutes from './routes/clima.routes';
 const tokenValidator = require ('./middleware/tokenValidator');
 const errorHandler = require ('./middleware/errorHandler');
 import { startPriceJob } from './jobs/fetch-precios.job';

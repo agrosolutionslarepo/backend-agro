@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { cultivoService } from '../servicios/cultivo.service';
+import { cultivoService } from '../services/cultivo.service';
 
 class CultivoController {
   public async getAllCultivos(req: Request, res: Response, next: NextFunction): Promise<void> {

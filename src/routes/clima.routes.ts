@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ClimaController  from '../controllers/clima';
+import ClimaController  from '../controllers/clima.controller';
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as ctrl from '../controllers/precios';
+import * as ctrl from '../controllers/precios.controller';
 
 const router = Router();
 router.get('/:symbol/latest', ctrl.latest);
