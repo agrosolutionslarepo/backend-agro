@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { HttpError } from '../errors/HttpError';
 
 const ERROR_HANDLERS = {
   JsonWebTokenError: (res: Response) =>
@@ -43,9 +44,22 @@ const ERROR_HANDLERS = {
   },
 };
 
-module.exports = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
+module.exports = (
+  error: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  // Log every error for troubleshooting
+  console.error(error);
+
+  if (error instanceof HttpError) {
+    return res.status(error.status).json({ error: error.message });
+  }
+
   const handler =
-    ERROR_HANDLERS[error.name as keyof typeof ERROR_HANDLERS] || ERROR_HANDLERS.defaultError;
+    ERROR_HANDLERS[error.name as keyof typeof ERROR_HANDLERS] ||
+    ERROR_HANDLERS.defaultError;
 
   handler(res, error);
 };
