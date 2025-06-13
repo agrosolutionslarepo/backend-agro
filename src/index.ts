@@ -22,6 +22,7 @@ import { startAgroNotifyJob } from './jobs/agroNotifications.job';
 const initDB = require('../config/db')        
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 app.use(cors()); // ✅ CORS habilitado
 
 // • Middlewares globales
@@ -56,7 +57,6 @@ app.use(errorHandler);
 (async () => {                                  // 🟢 IIFE async
   try {
     await initDB();                             // 🟢 espera Mongo
-    const PORT = Number(process.env.PORT) || 3000;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       startPriceJob(symbols); // 🟢 symbols ya existen
