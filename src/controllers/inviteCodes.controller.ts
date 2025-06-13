@@ -44,7 +44,7 @@ class InviteCodesController {
       console.log(req.body.code);
       const idEmpresa = req.user?.idEmpresa;
       if (!idEmpresa) return next(new HttpError(403, 'empresaId missing in token'));
-      inviteCodeService.disableInviteCode(idEmpresa, req.body.code);
+      await inviteCodeService.disableInviteCode(idEmpresa, req.body.code);
       return res.status(200).send('done');
     } catch (e) {
       next(e);
