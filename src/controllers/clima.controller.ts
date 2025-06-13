@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { climaService } from '../servicios/clima.service';
+import { climaService } from '../services/clima.service';
 import { LatLongRequiredError } from '../errors/climaError';
 
 class ClimaController {

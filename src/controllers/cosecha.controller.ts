@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { cosechaService } from '../servicios/cosecha.service';
+import { cosechaService } from '../services/cosecha.service';
 
 class CosechaController {
   public async getAllCosechas(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { semillaService } from '../servicios/semilla.service';
+import { semillaService } from '../services/semilla.service';
 
 class SemillaController {
   public async getAllSemillas(req: Request, res: Response, next: NextFunction): Promise<void> {

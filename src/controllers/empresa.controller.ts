@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { empresaService } from '../servicios/empresa.service';
+import { empresaService } from '../services/empresa.service';
 
 class EmpresaController {
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import ParcelaController from '../controllers/parcela';
+import ParcelaController from '../controllers/parcela.controller';
 const tokenValidator = require('../middleware/tokenValidator');
 
 const router = express.Router();

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { inviteCodeService } from '../servicios/inviteCodes.service';
+import { inviteCodeService } from '../services/inviteCodes.service';
 import {
   InviteCodeDuplicateError,
 } from '../errors/inviteCodesError';

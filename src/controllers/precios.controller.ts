@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { preciosService } from '../servicios/precios.service';
+import { preciosService } from '../services/precios.service';
 
 export async function latest(req: Request, res: Response, next: NextFunction) {
   try {

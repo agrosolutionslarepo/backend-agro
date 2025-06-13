@@ -1,5 +1,5 @@
 import express from 'express';
-import InviteCodesController from '../controllers/inviteCodes';
+import InviteCodesController from '../controllers/inviteCodes.controller';
 
 const router = express.Router();
 

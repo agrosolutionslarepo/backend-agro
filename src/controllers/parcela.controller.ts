@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { parcelaService } from '../servicios/parcela.service';
+import { parcelaService } from '../services/parcela.service';
 
 class ParcelaController {
   public async getAllParcelas(req: Request, res: Response, next: NextFunction): Promise<void> {

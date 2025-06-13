@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { usuarioService } from '../servicios/usuario.service';
-import { loginService } from '../servicios/login.service';
-import { passwordResetService } from '../servicios/passwordReset.service';
+import { usuarioService } from '../services/usuario.service';
+import { loginService } from '../services/login.service';
+import { passwordResetService } from '../services/passwordReset.service';
 import { EmpresaExistenteError } from '../errors/empresaErrors';
 
 class UsuarioController {

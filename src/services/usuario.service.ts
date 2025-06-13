@@ -3,9 +3,9 @@ import { IEmpresa } from '../models/empresa';
 import Empresa from '../models/empresa';
 import { UsuarioExistenteError } from "../errors/usuarioErrors";
 import { EmpresaExistenteError } from "../errors/empresaErrors";
-import { empresaService } from '../servicios/empresa.service';
-import { semillaService } from '../servicios/semilla.service';
-import { inviteCodeService } from '../servicios/inviteCodes.service';
+import { empresaService } from './empresa.service';
+import { semillaService } from './semilla.service';
+import { inviteCodeService } from './inviteCodes.service';
 import { sanitize } from '../helpers/sanitize';
 const bcrypt = require('bcrypt');
 

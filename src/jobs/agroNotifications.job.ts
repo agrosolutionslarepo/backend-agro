@@ -5,9 +5,9 @@
 // notificaciones.
 // ---------------------------------------------------------------------------
 import cron from 'node-cron';
-import { climaService } from '../servicios/clima.service';
-import { getActiveLots, saveNotification, updateLotGdd, Lot } from '../servicios/farm.service';
-import { pushToUser } from '../servicios/push.service';
+import { climaService } from '../services/clima.service';
+import { getActiveLots, saveNotification, updateLotGdd, Lot } from '../services/farm.service';
+import { pushToUser } from '../services/push.service';
 //import { Types } from 'mongoose';
 
 //--------------------------------------------------

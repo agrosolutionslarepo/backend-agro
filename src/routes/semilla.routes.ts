@@ -1,5 +1,5 @@
 import express from 'express';
-import SemillaController from '../controllers/semilla';
+import SemillaController from '../controllers/semilla.controller';
 const tokenValidator = require('../middleware/tokenValidator');
 
 const router = express.Router();

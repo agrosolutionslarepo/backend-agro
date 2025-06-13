@@ -1,7 +1,7 @@
 // src/jobs/fetch-precios.job.ts
 import cron from 'node-cron';
-import { fmpService } from '../servicios/fmp.service';
-import { preciosService }  from '../servicios/precios.service';
+import { fmpService } from '../services/fmp.service';
+import { preciosService }  from '../services/precios.service';
 
 /**
  * Lanza un fetch inmediato y luego programa la ejecución
