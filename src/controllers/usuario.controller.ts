@@ -3,6 +3,7 @@ import { usuarioService } from '../services/usuario.service';
 import { loginService } from '../services/login.service';
 import { passwordResetService } from '../services/passwordReset.service';
 import { EmpresaExistenteError } from '../errors/empresaErrors';
+import { HttpError } from '../errors/HttpError';
 
 class UsuarioController {
 
@@ -13,7 +14,7 @@ class UsuarioController {
         res.status(201).json(usuarioCreado);
     } catch (error) {
         if (error instanceof EmpresaExistenteError) {
-            res.status(409).json({ error: error.message });
+            next(new HttpError(409, error.message));
         } else {
             next(error);
         }
@@ -45,13 +46,13 @@ class UsuarioController {
         const idUsuario = req.user?.id;
 
         if (!idUsuario) {
-            return res.status(400).json({ message: "ID de usuario no encontrado en el token" });
+            return next(new HttpError(400, "ID de usuario no encontrado en el token"));
         }
 
         const usuarioEliminado = await usuarioService.deleteUsuario(idUsuario);
 
         if (!usuarioEliminado) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return next(new HttpError(404, "Usuario no encontrado"));
         }
 
         return res.status(200).json({
@@ -68,7 +69,7 @@ class UsuarioController {
 
     // Verificamos si 'id' es undefined y devolvemos un error si es el caso
     if (!id) {
-        return res.status(400).json({ error: 'ID de usuario no encontrado en el token' });
+        return next(new HttpError(400, 'ID de usuario no encontrado en el token'));
     }
 
     const {oldContraseña, contraseña } = req.body;
@@ -78,7 +79,7 @@ class UsuarioController {
         const usuarioActualizado = await usuarioService.cambioContraseña(check, id, { contraseña })
 
         if (!usuarioActualizado) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return next(new HttpError(404, 'Usuario no encontrado'));
         }
 
         return res.status(200).json({
@@ -95,7 +96,7 @@ class UsuarioController {
 
     // Verificamos si 'id' es undefined y devolvemos un error si es el caso
     if (!id) {
-        return res.status(400).json({ error: 'ID de usuario no encontrado en el token' });
+        return next(new HttpError(400, 'ID de usuario no encontrado en el token'));
     }
 
     const { nombre, apellido } = req.body;
@@ -104,7 +105,7 @@ class UsuarioController {
         const usuarioActualizado = await usuarioService.updateUsuario(id, { nombre, apellido });
 
         if (!usuarioActualizado) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+            return next(new HttpError(404, 'Usuario no encontrado'));
         }
 
         return res.status(200).json({
@@ -116,28 +117,28 @@ class UsuarioController {
     }
   }
   
-  public async getUsuariosMismaEmpresa(req: Request, res: Response) {
+  public async getUsuariosMismaEmpresa(req: Request, res: Response, next: NextFunction) {
     try {
         const id = req.user?.id;
 
         if (!id) {
-            return res.status(401).json({ error: "Usuario no autenticado" });
+            return next(new HttpError(401, "Usuario no autenticado"));
         }
 
         const usuarios = await usuarioService.getUsuariosMismaEmpresa(id);
         return res.json(usuarios);
     } catch (error: any) {
-        return res.status(500).json({ error: error.message || 'Error al obtener los usuarios' });
+        next(error);
     }
   }
 
   public async getUsuarioAutenticado(req: Request, res: Response, next: NextFunction) {
     try {
       const idUsuario = req.user?.id;
-      if (!idUsuario) return res.status(401).json({ error: 'Token inválido o no presente' });
+      if (!idUsuario) return next(new HttpError(401, 'Token inválido o no presente'));
 
       const usuario = await usuarioService.getUsuarioById(idUsuario);
-      if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
+      if (!usuario) return next(new HttpError(404, 'Usuario no encontrado'));
 
       res.json(usuario);
     } catch (error) {
@@ -148,10 +149,10 @@ class UsuarioController {
   public async saveExpoToken(req: Request, res: Response, next: NextFunction) {
     try {
       const idUsuario = req.user?.id;
-      if (!idUsuario) return res.status(401).json({ error: 'No autenticado' });
+      if (!idUsuario) return next(new HttpError(401, 'No autenticado'));
 
       const { token } = req.body;
-      if (!token) return res.status(400).json({ error: 'Token requerido' });
+      if (!token) return next(new HttpError(400, 'Token requerido'));
 
       const usuario = await usuarioService.setExpoToken(idUsuario, token);
       res.json(usuario);
@@ -166,7 +167,7 @@ class UsuarioController {
       const idUsuarioReasignar = req.params.id;
   
       if (!idAdmin) {
-        return res.status(401).json({ error: 'No autenticado' });
+        return next(new HttpError(401, 'No autenticado'));
       }
   
       const resultado = await usuarioService.deleteUsuarioDeMiEmpresa(idAdmin, idUsuarioReasignar);

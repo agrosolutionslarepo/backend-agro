@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { preciosService } from '../services/precios.service';
+import { HttpError } from '../errors/HttpError';
 
 export async function latest(req: Request, res: Response, next: NextFunction) {
   try {
     const { symbol } = req.params;
     const doc = await preciosService.getLatest(symbol.toUpperCase());
-    if (!doc) return res.status(404).json({ error: 'not found' });
+    if (!doc) return next(new HttpError(404, 'not found'));
     res.json(doc);
   } catch (err) {
     next(err);
