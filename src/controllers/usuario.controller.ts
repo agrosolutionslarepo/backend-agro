@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { usuarioService } from '../services/usuario.service';
 import { loginService } from '../services/login.service';
 import { passwordResetService } from '../services/passwordReset.service';
+import { notificationService } from '../services/notification.service';
 import { EmpresaExistenteError } from '../errors/empresaErrors';
 import { HttpError } from '../errors/HttpError';
 
@@ -156,6 +157,18 @@ class UsuarioController {
 
       const usuario = await usuarioService.setExpoToken(idUsuario, token);
       res.json(usuario);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUltimasNotificaciones(req: Request, res: Response, next: NextFunction) {
+    try {
+      const idUsuario = req.user?.id;
+      if (!idUsuario) return next(new HttpError(401, 'No autenticado'));
+
+      const notifs = await notificationService.getLastForUser(idUsuario, 10);
+      res.json(notifs);
     } catch (error) {
       next(error);
     }

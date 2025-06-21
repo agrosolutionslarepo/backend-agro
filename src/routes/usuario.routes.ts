@@ -10,6 +10,7 @@ router.post('/solicitarReset', UsuarioController.solicitarReset);
 router.post('/confirmarReset', UsuarioController.confirmarReset);
 router.use(tokenValidator);
 router.post('/pushToken', UsuarioController.saveExpoToken);
+router.get('/notificaciones', UsuarioController.getUltimasNotificaciones);
 router.put('/updatePassword', UsuarioController.updateContraseña);
 router.put('/deleteUsuario', UsuarioController.deleteUsuario);
 router.put('/updateUsuario', UsuarioController.updateUsuario);
